@@ -194,13 +194,7 @@ Allocate new OIDs under `1.3.6.1.5.5.7.6` for PKC‑bound variants of the compos
 
 # References
 
-## Normative References
-
-* {{!RFC2119}}
-* {{!RFC8174}}
-* **Composite ML‑DSA** (work in progress): *Composite ML‑DSA for use in X.509 Public Key Infrastructure, draft‑ietf‑lamps‑pq‑composite‑sigs‑15* (Feb 24, 2026). Sections 2.1, 2.2, 3.2, 3.3, 4, 5, 9 referenced throughout.
-* {{?FIPS.204}} (ML‑DSA)
-* Other algorithm references as per the base draft’s Appendix B (RSA, ECDSA, EdDSA, SHA2/SHAKE).
+TBD
 
 # Acknowledgments
 
