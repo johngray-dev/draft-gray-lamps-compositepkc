@@ -25,7 +25,7 @@ author:
  normative:
    I-D.draft-ietf-lamps-pq-composite-sigs: COMPOSITE-LAMPS
 
-# Abstract
+--- abstract
 
 This document defines a small, backwards‑compatible* change to composite ML-DSA that **cryptographically binds the signature to the specific composite public key**. It does so by defining a **Public‑Key Context** value (`pkc`) equal to a hash of the **serialized composite public key**, and by setting the composite context field to that value. Concretely:
 
@@ -42,6 +42,8 @@ where `pkc = Hash_ctx(SerializePublicKey(mldsaPK, tradPK))`. This prevents **key
 # Status of this Memo
 
 This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.
+
+--- middle
 
 # Introduction
 
@@ -199,3 +201,5 @@ TBD
 # Acknowledgments
 
 Thanks to the Composite ML‑DSA authors and LAMPS WG for the existing combiner design and analyses of pre‑hashing, non‑separability, and key‑reuse risks which this document builds upon.
+
+--- back
