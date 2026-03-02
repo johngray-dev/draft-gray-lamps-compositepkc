@@ -1,24 +1,29 @@
 ---
 title: Preventing Key Reuse and Cross‑Key Forgeries in Composite ML-DSA
 abbrev: Composite-PKC
-docname: draft-gray-lamps-compositepkc
+docname: draft-gray-lamps-compositepkc-latest
+
 category: std
 ipr: trust200902
 area: Security
 workgroup: LAMPS
-stand_alone: yes
+
 pi: [toc, sortrefs, symrefs]
+
 author:
   -
+    ins: J. Gray
     name: John Gray
-    org: Entrust
+    org: Entrust Limited
+    abbrev: Entrust
+    street: 2500 Solandt Road – Suite 100
+    city: Ottawa, Ontario
+    country: Canada
+    code: K2K 3G5
     email: john.gray@entrust.com
-  -
-    name: (TBD co-authors)
-    org: (TBD)
-    email: (TBD)
-date: 2026-03-02
----
+
+ normative:
+   I-D.draft-ietf-lamps-pq-composite-sigs: COMPOSITE-LAMPS
 
 # Abstract
 
