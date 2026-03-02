@@ -1,12 +1,21 @@
 ---
-title: Preventing Key Reuse and Cross‑Key Forgeries in Composite ML-DSA
-abbrev: Composite-PKC
-docname: draft-gray-lamps-compositepkc-latest
+title: Composite ML-DSA for use in X.509 Public Key Infrastructure
+abbrev: Composite ML-DSA
+docname: draft-ietf-lamps-pq-composite-sigs-latest
 
-category: std
 ipr: trust200902
 area: Security
-workgroup: LAMPS
+wg: LAMPS
+kw: Internet-Draft
+cat: std
+
+venue:
+  group: LAMPS
+  type: Working Group
+  mail: spams@ietf.org
+  arch: https://datatracker.ietf.org/wg/lamps/about/
+  github: lamps-wg/draft-composite-sigs
+  latest: https://lamps-wg.github.io/draft-composite-sigs/draft-ietf-lamps-pq-composite-sigs.html
 
 coding: utf-8
 pi:  # can use array (if all yes) or hash here
@@ -15,6 +24,16 @@ pi:  # can use array (if all yes) or hash here
   symrefs: yes
 
 author:
+  -
+    ins: M. Ounsworth
+    name: Mike Ounsworth
+    org: Entrust Limited
+    abbrev: Entrust
+    street: 2500 Solandt Road – Suite 100
+    city: Ottawa, Ontario
+    country: Canada
+    code: K2K 3G5
+    email: mike.ounsworth@entrust.com
   -
     ins: J. Gray
     name: John Gray
@@ -25,9 +44,151 @@ author:
     country: Canada
     code: K2K 3G5
     email: john.gray@entrust.com
+  -
+    ins: M. Pala
+    name: Massimiliano Pala
+    org: OpenCA Labs
+    city: New York City, New York
+    country: United States of America
+    email: director@openca.org
+  -
+    ins: J. Klaussner
+    name: Jan Klaussner
+    org: Bundesdruckerei GmbH
+    email: jan.klaussner@bdr.de
+    street: Kommandantenstr. 18
+    code: 10969
+    city: Berlin
+    country: Germany
+  -
+    ins: S. Fluhrer
+    name: Scott Fluhrer
+    org: Cisco Systems
+    email: sfluhrer@cisco.com
 
- normative:
-   I-D.draft-ietf-lamps-pq-composite-sigs: COMPOSITE-LAMPS
+
+normative:
+  #RFC2119: -- does not need to be explicit; added by bcp14 boilerplate
+  RFC2986:
+  RFC3279:
+  # RFC4210: -- obsoleted by 9810
+  RFC4211:
+  RFC5280:
+  RFC5480:
+  RFC5639:
+  RFC5652:
+  RFC5758:
+  RFC5915:
+  RFC5958:
+  RFC6090:
+  RFC6234:
+  RFC8017:
+  RFC8032:
+  #RFC8174: -- does not need to be explicit; added by bcp14 boilerplate
+  RFC8410:
+  RFC9810:
+  X.690:
+      title: "Information technology - ASN.1 encoding Rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"
+      date: November 2015
+      author:
+        - org: ITU-T
+      seriesinfo:
+        ISO/IEC: 8825-1:2015
+  SEC1:
+    title: "SEC 1: Elliptic Curve Cryptography"
+    date: May 21, 2009
+    author:
+      - org: "Certicom Research"
+    target: https://www.secg.org/sec1-v2.pdf
+  SEC2:
+    title: "SEC 2: Recommended Elliptic Curve Domain Parameters"
+    date: January 27, 2010
+    author:
+      - org: "Certicom Research"
+    target: https://www.secg.org/sec2-v2.pdf
+  X9.62–2005:
+    title: "Public Key Cryptography for the Financial Services Industry The Elliptic Curve Digital Signature Algorithm (ECDSA)"
+    date: "November 16, 2005"
+    author:
+      - org: "American National Standards Institute"
+  FIPS.186-5:
+    title: "Digital Signature Standard (DSS)"
+    date: February 3, 2023
+    author:
+      - org: "National Institute of Standards and Technology (NIST)"
+    target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf
+  FIPS.202:
+    title: "SHA-3 Standard: Permutation-Based Hash and Extendable-Output Functions"
+    date: August 2015
+    author:
+      - org: "National Institute of Standards and Technology (NIST)"
+    target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf
+  FIPS.204:
+    title: "Module-Lattice-Based Digital Signature Standard"
+    date: August 13, 2024
+    author:
+      - org: "National Institute of Standards and Technology (NIST)"
+    target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.204.pdf
+    seriesinfo:
+      "FIPS PUB": "204"
+
+
+informative:
+  RFC3092:
+  RFC5914:
+  RFC7292:
+  RFC7296:
+  RFC8411:
+  RFC8446:
+  RFC8551:
+  RFC9180:
+  RFC9794:
+  RFC9881:
+  I-D.draft-ietf-pquip-hybrid-signature-spectrums-07:
+  TestVectors:
+    title: "Test vectors for Composite-ML-DSA"
+    target: https://github.com/lamps-wg/draft-composite-sigs/tree/main/src
+  Bindel2017:
+    title: "Transitioning to a quantum-resistant public key infrastructure"
+    target: "https://link.springer.com/chapter/10.1007/978-3-319-59879-6_22"
+    author:
+      -
+        ins: N. Bindel
+        name: Nina Bindel
+      -
+        ins: U. Herath
+        name: Udyani Herath
+      -
+        ins: M. McKague
+        name: Matthew McKague
+      -
+        ins: D. Stebila
+        name: Douglas Stebila
+    date: 2017
+  BSI2021:
+    title: "Quantum-safe cryptography - fundamentals, current developments and recommendations"
+    target: https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/Brochure/quantum-safe-cryptography.pdf
+    author:
+      - org: "Federal Office for Information Security (BSI)"
+    date: October 2021
+  ANSSI2024:
+    title: "Position Paper on Quantum Key Distribution"
+    target: https://cyber.gouv.fr/sites/default/files/document/Quantum_Key_Distribution_Position_Paper.pdf
+    author:
+      - org: "French Cybersecurity Agency (ANSSI)"
+      - org: "Federal Office for Information Security (BSI)"
+      - org: "Netherlands National Communications Security Agency (NLNCSA)"
+      - org: "Swedish National Communications Security Authority, Swedish Armed Forces"
+  eIDAS2014:
+    title: "Regulation (EU) No 910/2014 of the European Parliament and of the Council of 23 July 2014 on electronic identification and trust services for electronic transactions in the internal market and repealing Directive 1999/93/EC"
+    author:
+     - org: European Parliament and Council
+    target: https://eur-lex.europa.eu/eli/reg/2014/910/oj/eng
+  codesigningbrsv3.8:
+    title: "Baseline Requirements for the Issuance and Management of Publicly‐Trusted Code Signing Certificates Version 3.8.0"
+    author:
+     - org: CA/Browser Forum
+    target: https://cabforum.org/working-groups/code-signing/documents/
 
 --- abstract
 
