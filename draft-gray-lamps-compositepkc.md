@@ -8,7 +8,11 @@ ipr: trust200902
 area: Security
 workgroup: LAMPS
 
-pi: [toc, sortrefs, symrefs]
+coding: utf-8
+pi:  # can use array (if all yes) or hash here
+  toc: yes
+  sortrefs:   # defaults to yes
+  symrefs: yes
 
 author:
   -
