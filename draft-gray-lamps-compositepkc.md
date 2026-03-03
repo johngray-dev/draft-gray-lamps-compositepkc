@@ -1,30 +1,22 @@
 ---
-title: Preventing Key Reuse and Cross‑Key Forgeries in Composite ML-DSA
-abbrev: Composite-PKC
-docname: draft-gray-lamps-compositepkc-latestt
+title: "Preventing Key Reuse and Cross‑Key Forgeries in Composite Signatures by Binding Context to the Public Key"
+abbrev: "Composite-PKC-Context"
+category: info
 
-ipr: trust200902
+docname: draft-gray-lamps-compositepkc-latest
+submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
+number:
+date:
+consensus: true
+v: 3
 area: Security
-wg: LAMPS
-kw: Internet-Draft
-cat: std
-
-venue:
-  group: LAMPS
-  type: Working Group
-  mail: spams@ietf.org
-  arch: https://datatracker.ietf.org/wg/lamps/about/
-  github: lamps-wg/draft-composite-sigs
-  latest: https://lamps-wg.github.io/draft-composite-sigs/draft-ietf-lamps-pq-composite-sigs.html
-
-coding: utf-8
-pi:  # can use array (if all yes) or hash here
-  toc: yes
-  sortrefs:   # defaults to yes
-  symrefs: yes
+workgroup: LAMPS
+keyword:
+ - composite signatures
+ - public key binding
 
 author:
-  -
+ -
     ins: J. Gray
     name: John Gray
     org: Entrust Limited
@@ -35,67 +27,16 @@ author:
     code: K2K 3G5
     email: john.gray@entrust.com
 
+
 normative:
-  #RFC2119: -- does not need to be explicit; added by bcp14 boilerplate
-  #RFC8174: -- does not need to be explicit; added by bcp14 boilerplate
-  SEC1:
-    title: "SEC 1: Elliptic Curve Cryptography"
-    date: May 21, 2009
-    author:
-      - org: "Certicom Research"
-    target: https://www.secg.org/sec1-v2.pdf
-  SEC2:
-    title: "SEC 2: Recommended Elliptic Curve Domain Parameters"
-    date: January 27, 2010
-    author:
-      - org: "Certicom Research"
-    target: https://www.secg.org/sec2-v2.pdf
-  X9.62–2005:
-    title: "Public Key Cryptography for the Financial Services Industry The Elliptic Curve Digital Signature Algorithm (ECDSA)"
-    date: "November 16, 2005"
-    author:
-      - org: "American National Standards Institute"
-  FIPS.186-5:
-    title: "Digital Signature Standard (DSS)"
-    date: February 3, 2023
-    author:
-      - org: "National Institute of Standards and Technology (NIST)"
-    target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf
-  FIPS.202:
-    title: "SHA-3 Standard: Permutation-Based Hash and Extendable-Output Functions"
-    date: August 2015
-    author:
-      - org: "National Institute of Standards and Technology (NIST)"
-    target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf
-  FIPS.204:
-    title: "Module-Lattice-Based Digital Signature Standard"
-    date: August 13, 2024
-    author:
-      - org: "National Institute of Standards and Technology (NIST)"
-    target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.204.pdf
-    seriesinfo:
-      "FIPS PUB": "204"
-  I-D.draft-ietf-lamps-pq-composite-sigs-15:
 
 informative:
 
+...
+
 --- abstract
 
-This document defines a small, backwards‑compatible* change to composite ML-DSA that **cryptographically binds the signature to the specific composite public key**. It does so by defining a **Public‑Key Context** value (`pkc`) equal to a hash of the **serialized composite public key**, and by setting the composite context field to that value. Concretely:
-
-```
-
-M' = Prefix || Label || len(pkc) || pkc || PH(M)
-
-```
-
-where `pkc = Hash_ctx(SerializePublicKey(mldsaPK, tradPK))`. This prevents **key reuse** and **cross‑key forgeries** across different composite keys, while preserving the API surface of Composite ML‑DSA and related encodings. The construction introduces two helper procedures to compute `pkc` from either the composite private key or the composite public key.
-
-> *Note: Protocols and encoders remain unchanged; howeve, wire interoperability requires **new algorithm identifiers (OIDs)** for “PKC‑bound” variants.
-
-# Status of this Memo
-
-This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.
+This document defines a small, backwards‑compatible* change to composite ML-DSA that **cryptographically binds the signature to the specific composite public key**. It does so by defining a **Public‑Key Context** value (`pkc`) equal to a hash of the **serialized composite public key**, and by setting the composite context field to that value. This prevents **key reuse** and **cross‑key forgeries** across different composite keys, while preserving the API surface of Composite ML‑DSA and related encodings. The construction introduces two helper procedures to compute `pkc` from either the composite private key or the composite public key.
 
 --- middle
 
@@ -103,11 +44,9 @@ This Internet-Draft is submitted in full conformance with the provisions of BCP 
 
 Composite signature schemes (e.g., Composite ML‑DSA) pre-hash the application message and prepend a **Prefix**, an algorithm‑specific **Label**, and an application‑provided **ctx** byte string to form the message representative `M'`, which is then signed by each component primitive. The current composite signature construction:
 
-```
-
-M' = Prefix || Label || len(ctx) || ctx || PH(M)
-
-```
+~~~
+M' :=  Prefix || Label || len(ctx) || ctx || PH( M )
+~~~
 
 The `ctx` is an application context of up to 255 bytes.
 
@@ -115,11 +54,12 @@ While the existing design already mitigates several cross‑protocol issues via 
 
 This document proposes a **minimal, mechanical change**: set `ctx` to a **hash of the composite public key**. Because the hash depends on the *exact* public key bytes, both component signatures become bound to the same key material, preventing cross‑key recombination.
 
-## Notational and Terminology Alignment
+
+# Conventions and Definitions
 
 This document inherits the notation of the Composite ML‑DSA draft (e.g., `Prefix`, `Label`, `PH`, `SerializePublicKey`, etc.) and the conventional **KeyGen/Sign/Verify** API of a signature scheme.
 
-Key words **MUST**, **SHOULD**, etc., are to be interpreted as described in BCP 14 \[RFC2119\] and \[RFC8174\].
+{::boilerplate bcp14-tagged}
 
 # Threat Model and Goals
 
@@ -135,19 +75,15 @@ This construction proposes `len(pkc)` as the length of the `len(ctx)` and `pkc` 
 
 Let `Hash_ctx` denote the hash function chosen by the algorithm’s OID (e.g., SHA‑256, SHA‑512, SHAKE256/64). The **Public‑Key Context** is:
 
-```
-
+~~~
 pkc = Hash_ctx( ctx || SerializePublicKey(mldsaPK, tradPK) )
-
-```
+~~~
 
 The new message representative is:
 
-```
-
+~~~
 M' := Prefix || Label || len(pkc) || pkc || PH(M)
-
-```
+~~~
 
 `Prefix` and `Label` are unchanged. `len(pkc)` is encoded as a single unsigned byte, which is sufficient because the mandated hash outputs are ≤ 64 bytes. The `PH(M)` is the pre‑hash of the application message as in the base document.
 
@@ -157,8 +93,7 @@ This draft defines two convenience routines to compute `pkc` from either the com
 
 ## ComputePublicKeyContext from Private Key
 
-```
-
+~~~
 Composite-ML-DSA<OID>.ComputePublicKeyContext(sk) -> pkc
 
 Inputs:
@@ -176,8 +111,7 @@ Process:
 5.  pk = SerializePublicKey(mldsaPK, tradPK)                // base spec Section 4.1
 6.  pkc = Hash_ctx(pk)
 7.  return pkc
-
-```
+~~~
 
 > Notes: The seed‑based ML‑DSA private key representation and the ability to re‑derive `mldsaPK` from `mldsaSeed` are already normative in the base specification.
 
@@ -185,8 +119,7 @@ Process:
 
 ## ComputePublicKeyContext from Public Key
 
-```
-
+~~~
 Composite-ML-DSA<OID>.ComputePublicKeyContext(pk) -> pkc
 
 Inputs:
@@ -198,8 +131,7 @@ Hash_ctx
 Process:
 1.  pkc = Hash_ctx(pk)
 2.  return pkc
-
-```
+~~~
 
 # Algorithms
 
@@ -220,6 +152,7 @@ Because wire compatibility requires peers to know whether `ctx` is application�
 
 Labels MUST be unique and MUST include a “-PKC” suffix to prevent cross‑label confusion and to strengthen non‑separability when labels appear inside higher‑layer signed objects.
 
+
 # Security Considerations
 
 **Key Reuse**: The base spec strictly forbids reusing component keys across composite and non‑composite contexts or across composites. Binding `ctx` to `pkc` provides a cryptographic backstop: even if component keys were (improperly) reused, cross‑key splicing will fail because `pkc` differs for each public key instance.
@@ -231,6 +164,7 @@ Labels MUST be unique and MUST include a “-PKC” suffix to prevent cross‑la
 **Hash Choices**: `Hash_ctx` MUST be the algorithm’s registered pre‑hash function (e.g., SHA‑256, SHA‑512, SHAKE256/64). This keeps implementation complexity minimal and ensures digest sizes fit within the ctx length field.
 
 **Privacy**: `pkc` reveals nothing beyond what the public key already reveals; it is a hash of public data.
+
 
 # Implementation Considerations
 
@@ -248,12 +182,9 @@ SPKI and OneAsymmetricKey wrapping are unchanged. Only the **AlgorithmIdentifier
 
 Allocate new OIDs under `1.3.6.1.5.5.7.6` for PKC‑bound variants of the composites registered in the base document. Each registration lists: OID, Label (with `-PKC` suffix), `PH`, ML‑DSA variant, traditional primitive and parameters. The ASN.1 module follows the base style with `sa-CompositeSignature`/`pk-CompositeSignature`, “no ASN.1 wrapping” for value fields, and `PARAMS ARE absent`.
 
-# References
-
-TBD
+--- back
 
 # Acknowledgments
+{:numbered="false"}
 
 Thanks to the Composite ML‑DSA authors and LAMPS WG for the existing combiner design and analyses of pre‑hashing, non‑separability, and key‑reuse risks which this document builds upon.
-
---- back
