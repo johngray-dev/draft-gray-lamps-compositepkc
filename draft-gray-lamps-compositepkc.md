@@ -76,7 +76,7 @@ This construction proposes `len(pkc)` as the length of the `len(ctx)` and `pkc` 
 Let `Hash_ctx` denote the hash function chosen by the algorithm’s OID (e.g., SHA‑256, SHA‑512, SHAKE256/64). The **Public‑Key Context** is:
 
 ~~~
-pkc = Hash_ctx( ctx || SerializePublicKey(mldsaPK, tradPK) )
+pkc = Hash_ctx( SerializePublicKey(mldsaPK, tradPK) )
 ~~~
 
 The new message representative is:
@@ -115,7 +115,7 @@ Process:
 
 > Notes: The seed‑based ML‑DSA private key representation and the ability to re‑derive `mldsaPK` from `mldsaSeed` are already normative in the base specification.
 
-#TODO Add the text on how to computer public from Private (like we did in Composite KEM).
+TODO:  Add the text on how to computer public from Private (like we did in Composite KEM).
 
 ## ComputePublicKeyContext from Public Key
 
