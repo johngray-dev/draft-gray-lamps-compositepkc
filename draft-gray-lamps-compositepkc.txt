@@ -75,16 +75,14 @@ Table of Contents
    4.  Overview of the Construction
    5.  Public-Key Context (PKC) Routines
      5.1.  ComputePublicKeyContext from Private Key
-   6.  TODO Add the text on how to computer public from Private (like
-           we did in Composite KEM).
-     6.1.  ComputePublicKeyContext from Public Key
-   7.  Algorithms
-   8.  Serialization and ASN.1 Usage
-   9.  Security Considerations
-   10. Implementation Considerations
-   11. Use within X.509 and PKIX
-   12. IANA Considerations
-   13. Normative References
+     5.2.  ComputePublicKeyContext from Public Key
+   6.  Algorithms
+   7.  Serialization and ASN.1 Usage
+   8.  Security Considerations
+   9.  Implementation Considerations
+   10. Use within X.509 and PKIX
+   11. IANA Considerations
+   12. Normative References
    Acknowledgments
    Author's Address
 
@@ -152,7 +150,7 @@ Table of Contents
    Let Hash_ctx denote the hash function chosen by the algorithm’s OID
    (e.g., SHA-256, SHA-512, SHAKE256/64).  The *Public-Key Context* is:
 
-   pkc = Hash_ctx( ctx || SerializePublicKey(mldsaPK, tradPK) )
+   pkc = Hash_ctx( SerializePublicKey(mldsaPK, tradPK) )
 
    The new message representative is:
 
@@ -192,10 +190,10 @@ Process:
       ability to re-derive mldsaPK from mldsaSeed are already normative
       in the base specification.
 
-6.  TODO Add the text on how to computer public from Private (like we
-    did in Composite KEM).
+   TODO: Add the text on how to computer public from Private (like we
+   did in Composite KEM).
 
-6.1.  ComputePublicKeyContext from Public Key
+5.2.  ComputePublicKeyContext from Public Key
 
 Composite-ML-DSA<OID>.ComputePublicKeyContext(pk) -> pkc
 
@@ -209,7 +207,7 @@ Process:
 1.  pkc = Hash_ctx(pk)
 2.  return pkc
 
-7.  Algorithms
+6.  Algorithms
 
    Both Composite-ML-DSA<OID>.Sign(sk, M, ctx) and Composite-ML-
    DSA<OID>.Verify(pk, M, s, ctx) remain the same.  The only difference
@@ -221,7 +219,7 @@ Process:
    current design.  To keep that property, a future version of this
    specification could set pkc = HASH (ctx || publickey).
 
-8.  Serialization and ASN.1 Usage
+7.  Serialization and ASN.1 Usage
 
    This document *does not* change the composite public/private key or
    signature *serialization formats* from the base spec—keys and
@@ -239,7 +237,7 @@ Process:
    cross-label confusion and to strengthen non-separability when labels
    appear inside higher-layer signed objects.
 
-9.  Security Considerations
+8.  Security Considerations
 
    *Key Reuse*: The base spec strictly forbids reusing component keys
    across composite and non-composite contexts or across composites.
@@ -268,7 +266,7 @@ Process:
    *Privacy*: pkc reveals nothing beyond what the public key already
    reveals; it is a hash of public data.
 
-10.  Implementation Considerations
+9.  Implementation Considerations
 
    *Signer Access to pk*: The signer computes pkc either by
    reconstructing mldsaPK from the seed (already required in the base
@@ -283,14 +281,14 @@ Process:
    OIDs.  Profiles may recommend a small subset, similar to the
    profiling advice in the base document.
 
-11.  Use within X.509 and PKIX
+10.  Use within X.509 and PKIX
 
    SPKI and OneAsymmetricKey wrapping are unchanged.  Only the
    *AlgorithmIdentifier* (OID/Label) differs.  Verification builds pkc
    from the BIT STRING subjectPublicKey to reconstruct M'.  The same
    rules for keyUsage apply.
 
-12.  IANA Considerations
+11.  IANA Considerations
 
    Allocate new OIDs under 1.3.6.1.5.5.7.6 for PKC-bound variants of the
    composites registered in the base document.  Each registration lists:
@@ -299,7 +297,7 @@ Process:
    with sa-CompositeSignature/pk-CompositeSignature, “no ASN.1 wrapping”
    for value fields, and PARAMS ARE absent.
 
-13.  Normative References
+12.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
