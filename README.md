@@ -1,6 +1,6 @@
 <!-- regenerate: on (set to off if you edit this file) -->
 
-# Preventing Key Reuse and Cross‑Key Forgeries in Composite Signatures by Binding Context to the Public Key
+# Preventing Key Reuse and Cross‑Key Forgeries in Composite ML-DSA
 
 This is the working area for the individual Internet-Draft, "Preventing Key Reuse and Cross‑Key Forgeries in Composite Signatures by Binding Context to the Public Key".
 
