@@ -9,8 +9,8 @@ number:
 date:
 consensus: true
 v: 3
-area: Security
-workgroup: LAMPS
+area: "Security"
+workgroup: "Limited Additional Mechanisms for PKIX and SMIME"
 keyword:
  - composite signatures
  - public key binding
@@ -157,7 +157,7 @@ Labels MUST be unique and MUST include a “-PKC” suffix to prevent cross‑la
 
 **Key Reuse**: The base spec strictly forbids reusing component keys across composite and non‑composite contexts or across composites. Binding `ctx` to `pkc` provides a cryptographic backstop: even if component keys were (improperly) reused, cross‑key splicing will fail because `pkc` differs for each public key instance.
 
-**Non‑separability**: The base construction achieved Weak Non‑Separability (WNS) and a limited form of SNS for ML‑DSA via the `mldsa_ctx=Label`. PKC‑binding additionally prevents forming `(mldsaSig1, tradSig2)` under different keys, because both signatures are now bounded to the same `pkc`. This does **not** fix primitive‑level malleability (e.g., ECDSA) and therefore does not claim SUF‑CMA.  However, for algorithms like EdDSA or Ed448 which are SUF secure, this property should remain. 
+**Non‑separability**: The base construction achieved Weak Non‑Separability (WNS) and a limited form of SNS for ML‑DSA via the `mldsa_ctx=Label`. PKC‑binding additionally prevents forming `(mldsaSig1, tradSig2)` under different keys, because both signatures are now bounded to the same `pkc`. This does **not** fix primitive‑level malleability (e.g., ECDSA) and therefore does not claim SUF‑CMA.  However, for algorithms like EdDSA or Ed448 which are SUF secure, this property should remain.
 
 **Prefix Guard**: Existing **Prefix** and **Label** remain unchanged; deployments that implemented the optional Prefix guard for traditional verifiers can keep it as is.
 
