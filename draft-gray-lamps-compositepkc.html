@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
-<title>Preventing Key Reuse and Cross‑Key Forgeries in Composite Signatures by Binding Context to the Public Key</title>
+<title>Preventing Key Reuse and Cross‑Key Forgeries in Composite ML-DSA</title>
 <meta content="John Gray" name="author">
 <meta content="
        This document defines a small, backwards‑compatible* change to composite ML-DSA that  cryptographically binds the signature to the specific composite public key . It does so by defining a  Public‑Key Context  value ( pkc ) equal to a hash of the  serialized composite public key , and by setting the composite context field to that value. This prevents  key reuse  and  cross‑key forgeries  across different composite keys, while preserving the API surface of Composite ML‑DSA and related encodings. The construction introduces two helper procedures to compute  pkc  from either the composite private key or the composite public key. 
@@ -1058,7 +1058,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <div id="internal-metadata" class="document-information">
 <dl id="identifiers">
 <dt class="label-workgroup">Workgroup:</dt>
-<dd class="workgroup">LAMPS</dd>
+<dd class="workgroup">Limited Additional Mechanisms for PKIX and SMIME</dd>
 <dt class="label-internet-draft">Internet-Draft:</dt>
 <dd class="internet-draft">draft-gray-lamps-compositepkc-latest</dd>
 <dt class="label-published">Published:</dt>
@@ -1078,10 +1078,21 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </dd>
 </dl>
 </div>
-<h1 id="title">Preventing Key Reuse and Cross‑Key Forgeries in Composite Signatures by Binding Context to the Public Key</h1>
+<h1 id="title">Preventing Key Reuse and Cross‑Key Forgeries in Composite ML-DSA</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">This document defines a small, backwards‑compatible* change to composite ML-DSA that <strong>cryptographically binds the signature to the specific composite public key</strong>. It does so by defining a <strong>Public‑Key Context</strong> value (<code>pkc</code>) equal to a hash of the <strong>serialized composite public key</strong>, and by setting the composite context field to that value. This prevents <strong>key reuse</strong> and <strong>cross‑key forgeries</strong> across different composite keys, while preserving the API surface of Composite ML‑DSA and related encodings. The construction introduces two helper procedures to compute <code>pkc</code> from either the composite private key or the composite public key.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-discussion-venues">
+<a href="#name-discussion-venues" class="section-name selfRef">Discussion Venues</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">Discussion of this document takes place on the
+    Limited Additional Mechanisms for PKIX and SMIME Working Group mailing list (spasm@ietf.org),
+    which is archived at <span><a href="https://mailarchive.ietf.org/arch/browse/spasm/">https://mailarchive.ietf.org/arch/browse/spasm/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">Source for this draft and an issue tracker can be found at
+    <span><a href="https://github.com/johngray-dev/draft-gray-lamps-compositepkc">https://github.com/johngray-dev/draft-gray-lamps-compositepkc</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
 </section>
 <div id="status-of-memo">
 <section id="section-boilerplate.1">

@@ -2,14 +2,13 @@
 
 
 
-LAMPS                                                            J. Gray
+Limited Additional Mechanisms for PKIX and SMIME                 J. Gray
 Internet-Draft                                                   Entrust
 Intended status: Informational                              3 March 2026
 Expires: 4 September 2026
 
 
-Preventing Key Reuse and Cross-Key Forgeries in Composite Signatures by
-                   Binding Context to the Public Key
+    Preventing Key Reuse and Cross-Key Forgeries in Composite ML-DSA
                   draft-gray-lamps-compositepkc-latest
 
 Abstract
@@ -24,6 +23,18 @@ Abstract
    Composite ML-DSA and related encodings.  The construction introduces
    two helper procedures to compute pkc from either the composite
    private key or the composite public key.
+
+Discussion Venues
+
+   This note is to be removed before publishing as an RFC.
+
+   Discussion of this document takes place on the Limited Additional
+   Mechanisms for PKIX and SMIME Working Group mailing list
+   (spasm@ietf.org), which is archived at
+   https://mailarchive.ietf.org/arch/browse/spasm/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/johngray-dev/draft-gray-lamps-compositepkc.
 
 Status of This Memo
 
