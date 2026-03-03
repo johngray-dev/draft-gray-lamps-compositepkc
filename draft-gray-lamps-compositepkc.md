@@ -1,5 +1,5 @@
 ---
-title: "Preventing Key Reuse and Cross‑Key Forgeries in Composite Signatures by Binding Context to the Public Key"
+title: "Preventing Key Reuse and Cross‑Key Forgeries in Composite ML-DSA"
 abbrev: "Composite-PKC-Context"
 category: info
 
