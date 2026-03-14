@@ -1050,7 +1050,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Gray</td>
-<td class="center">Expires 4 September 2026</td>
+<td class="center">Expires 15 September 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1063,12 +1063,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-gray-lamps-compositepkc-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-03-03" class="published">3 March 2026</time>
+<time datetime="2026-03-14" class="published">14 March 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-09-04">4 September 2026</time></dd>
+<dd class="expires"><time datetime="2026-09-15">15 September 2026</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1113,7 +1113,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 4 September 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 15 September 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1178,19 +1178,16 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-implementation-consideratio" class="internal xref">Implementation Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-use-within-x509-and-pkix" class="internal xref">Use within X.509 and PKIX</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-normative-references" class="internal xref">Normative References</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
-            <p id="section-toc.1-1.14.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.13.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1339,14 +1336,7 @@ Process:
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-serialization-and-asn1-usag" class="section-name selfRef">Serialization and ASN.1 Usage</a>
       </h2>
 <p id="section-7-1">This document <strong>does not</strong> change the composite public/private key or signature <strong>serialization formats</strong> from the base spec—keys and signatures remain concatenations of the component encodings. It also does not change DER wrapping in SPKI/PKCS#8.<a href="#section-7-1" class="pilcrow">¶</a></p>
-<p id="section-7-2">Because wire compatibility requires peers to know whether <code>ctx</code> is application‑set or PKC‑bound, this document registers <strong>new algorithm identifiers</strong> for each PKC‑bound combination (see IANA).<a href="#section-7-2" class="pilcrow">¶</a></p>
-<ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-7-3.1">
-          <p id="section-7-3.1.1">Example names (OIDs TBD):
-<code>id-MLDSA65-ECDSA-P256-SHA512-PKC</code>, Label: <code>COMPSIG-MLDSA65-ECDSA-P256-SHA512-PKC</code>, <code>PH=SHA512</code>, <code>Hash_ctx=SHA512</code>.<a href="#section-7-3.1.1" class="pilcrow">¶</a></p>
-</li>
-      </ul>
-<p id="section-7-4">Labels <span class="bcp14">MUST</span> be unique and <span class="bcp14">MUST</span> include a “-PKC” suffix to prevent cross‑label confusion and to strengthen non‑separability when labels appear inside higher‑layer signed objects.<a href="#section-7-4" class="pilcrow">¶</a></p>
+<p id="section-7-2">Because wire compatibility requires peers to know whether <code>ctx</code> is application‑set or PKC‑bound, this document could haved register <strong>new algorithm identifiers</strong> for each PKC‑bound combination.  However, that is not within the scope of this document.  This is meant for specific application context use-cases where the preventing key reuse is a desired security property.<a href="#section-7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
@@ -1366,31 +1356,22 @@ Process:
       <h2 id="name-implementation-consideratio">
 <a href="#section-9" class="section-number selfRef">9. </a><a href="#name-implementation-consideratio" class="section-name selfRef">Implementation Considerations</a>
       </h2>
-<p id="section-9-1"><strong>Signer Access to pk</strong>: The signer computes <code>pkc</code> either by reconstructing <code>mldsaPK</code> from the seed (already required in the base spec’s signing flow) and deriving <code>tradPK</code> from <code>tradSK</code>, or by keeping a cached copy of <code>pk</code> alongside <code>sk</code>.<a href="#section-9-1" class="pilcrow">¶</a></p>
-<p id="section-9-2"><strong>ctx Parameter</strong>: PKC‑bound algorithms <strong>ignore</strong> any externally supplied <code>ctx</code>. Libraries <span class="bcp14">SHOULD</span> expose <code>Sign(sk, M)</code> and <code>Verify(pk, M, s)</code> without a free‑form <code>ctx</code> for the PKC variants to avoid misuse.<a href="#section-9-2" class="pilcrow">¶</a></p>
-<p id="section-9-3"><strong>Interoperability</strong>: Because <code>M'</code> changes, peers <span class="bcp14">MUST</span> advertise the PKC OIDs. Profiles may recommend a small subset, similar to the profiling advice in the base document.<a href="#section-9-3" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="use-within-x509-and-pkix">
-<section id="section-10">
-      <h2 id="name-use-within-x509-and-pkix">
-<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-use-within-x509-and-pkix" class="section-name selfRef">Use within X.509 and PKIX</a>
-      </h2>
-<p id="section-10-1">SPKI and OneAsymmetricKey wrapping are unchanged. Only the <strong>AlgorithmIdentifier</strong> (OID/Label) differs. Verification builds <code>pkc</code> from the BIT STRING <code>subjectPublicKey</code> to reconstruct <code>M'</code>. The same rules for <code>keyUsage</code> apply.<a href="#section-10-1" class="pilcrow">¶</a></p>
+<p id="section-9-1"><strong>Signer Access to pk</strong>: The signer computes <code>pkc</code> either by deriving <code>tradPK</code> from <code>tradSK</code>, or by keeping a cached copy of <code>pk</code> alongside <code>sk</code>.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-2"><strong>Interoperability</strong>: Because <code>M'</code> changes when this context type is used, peers <span class="bcp14">MUST</span> know that this context will be used.  One way to achieve this is for application specific use cases to specify use of this context type as part of the usage.<a href="#section-9-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
-<section id="section-11">
+<section id="section-10">
       <h2 id="name-iana-considerations">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-11-1">Allocate new OIDs under <code>1.3.6.1.5.5.7.6</code> for PKC‑bound variants of the composites registered in the base document. Each registration lists: OID, Label (with <code>-PKC</code> suffix), <code>PH</code>, ML‑DSA variant, traditional primitive and parameters. The ASN.1 module follows the base style with <code>sa-CompositeSignature</code>/<code>pk-CompositeSignature</code>, “no ASN.1 wrapping” for value fields, and <code>PARAMS ARE absent</code>.<a href="#section-11-1" class="pilcrow">¶</a></p>
+<p id="section-10-1">None<a href="#section-10-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-normative-references">
-<section id="section-12">
+<section id="section-11">
       <h2 id="name-normative-references">
-<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
       </h2>
 <dl class="references">
 <dt id="RFC2119">[RFC2119]</dt>
