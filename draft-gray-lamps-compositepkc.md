@@ -145,13 +145,7 @@ Note:  The application specific `ctx` argument is **ignored** with this current 
 
 This document **does not** change the composite public/private key or signature **serialization formats** from the base spec—keys and signatures remain concatenations of the component encodings. It also does not change DER wrapping in SPKI/PKCS#8.
 
-Because wire compatibility requires peers to know whether `ctx` is application‑set or PKC‑bound, this document registers **new algorithm identifiers** for each PKC‑bound combination (see IANA).
-
-> Example names (OIDs TBD):
-> `id-MLDSA65-ECDSA-P256-SHA512-PKC`, Label: `COMPSIG-MLDSA65-ECDSA-P256-SHA512-PKC`, `PH=SHA512`, `Hash_ctx=SHA512`.
-
-Labels MUST be unique and MUST include a “-PKC” suffix to prevent cross‑label confusion and to strengthen non‑separability when labels appear inside higher‑layer signed objects.
-
+Because wire compatibility requires peers to know whether `ctx` is application‑set or PKC‑bound, this document could haved register **new algorithm identifiers** for each PKC‑bound combination.  However, that is not within the scope of this document.  This is meant for specific application context use-cases where the preventing key reuse is a desired security property.
 
 # Security Considerations
 
@@ -168,19 +162,14 @@ Labels MUST be unique and MUST include a “-PKC” suffix to prevent cross‑la
 
 # Implementation Considerations
 
-**Signer Access to pk**: The signer computes `pkc` either by reconstructing `mldsaPK` from the seed (already required in the base spec’s signing flow) and deriving `tradPK` from `tradSK`, or by keeping a cached copy of `pk` alongside `sk`.
+**Signer Access to pk**: The signer computes `pkc` either by deriving `tradPK` from `tradSK`, or by keeping a cached copy of `pk` alongside `sk`.
 
-**ctx Parameter**: PKC‑bound algorithms **ignore** any externally supplied `ctx`. Libraries SHOULD expose `Sign(sk, M)` and `Verify(pk, M, s)` without a free‑form `ctx` for the PKC variants to avoid misuse.
+**Interoperability**: Because `M'` changes when this context type is used, peers MUST know that this context will be used.  One way to achieve this is for application specific use cases to specify use of this context type as part of the usage.
 
-**Interoperability**: Because `M'` changes, peers MUST advertise the PKC OIDs. Profiles may recommend a small subset, similar to the profiling advice in the base document.
-
-# Use within X.509 and PKIX
-
-SPKI and OneAsymmetricKey wrapping are unchanged. Only the **AlgorithmIdentifier** (OID/Label) differs. Verification builds `pkc` from the BIT STRING `subjectPublicKey` to reconstruct `M'`. The same rules for `keyUsage` apply.
 
 # IANA Considerations
 
-Allocate new OIDs under `1.3.6.1.5.5.7.6` for PKC‑bound variants of the composites registered in the base document. Each registration lists: OID, Label (with `-PKC` suffix), `PH`, ML‑DSA variant, traditional primitive and parameters. The ASN.1 module follows the base style with `sa-CompositeSignature`/`pk-CompositeSignature`, “no ASN.1 wrapping” for value fields, and `PARAMS ARE absent`.
+None
 
 --- back
 
