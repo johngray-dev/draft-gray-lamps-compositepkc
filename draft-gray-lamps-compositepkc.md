@@ -29,8 +29,8 @@ author:
 
 
 normative:
-  I-D.draft-ietf-lamps-pq-composite-sigs-19:
-  I-D.draft-ietf-lamps-pq-composite-kem-14:
+  I-D.draft-ietf-lamps-pq-composite-sigs:
+  I-D.draft-ietf-lamps-pq-composite-kem:
   FIPS.204:
     title: "Module-Lattice-Based Digital Signature Standard"
     date: August 13, 2024
@@ -192,6 +192,5 @@ None
 --- back
 
 # Acknowledgments
-{:numbered="false"}
 
 Thanks to the Composite ML‑DSA authors and LAMPS WG for the existing design and analyses of pre‑hashing, non‑separability, and key‑reuse risks which this document builds upon.  Thanks to Lucas Prabel for his feedback on this document.
