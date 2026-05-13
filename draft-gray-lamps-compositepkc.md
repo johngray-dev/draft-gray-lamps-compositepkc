@@ -26,6 +26,11 @@ author:
     country: Canada
     code: K2K 3G5
     email: john.gray@entrust.com
+ -
+    ins: L. Prabel
+    name: Lucas Prabel
+    org: Huawei
+    email: lucas.prabel@huawei.com
 
 
 normative:
@@ -95,7 +100,7 @@ The new message representative is:
 M' := Prefix || Label || len(pkc) || pkc || PH(M)
 ~~~
 
-`Prefix` and `Label` are unchanged. `len(pkc)` is encoded as a single unsigned byte, which is sufficient because the mandated hash outputs are ≤ 64 bytes. The `PH(M)` is the pre‑hash of the application message as in the base document.
+`Prefix` and `Label` are unchanged. `len(pkc)` is encoded as a single unsigned byte, which is sufficient because the mandated hash outputs are ≤ 64 bytes. The `PH(M)` is the pre‑hash of the application message as in {{I-D.ietf-lamps-pq-composite-sigs}}.
 
 # Public‑Key Context (PKC) Routines
 
@@ -163,11 +168,11 @@ Note:  The application specific `ctx` argument is **ignored** with this current 
 
 This document **does not** change the composite public/private key or signature **serialization formats** from {{I-D.ietf-lamps-pq-composite-sigs}} and signatures remain concatenations of the component encodings. It also does not change DER wrapping in SPKI/PKCS#8.
 
-Because wire compatibility requires peers to know whether `ctx` is application‑set or PKC‑bound, this document could haved registered **new algorithm identifiers** for each PKC‑bound combination.  However, that is not within the scope of this document.  This is meant for specific application context use-cases where the preventing key reuse is a desired security property.  For example, applications which choose to profile a set of composite signatures could choose to also adopt the use of this context.
+Because wire compatibility requires peers to know whether `ctx` is application‑set or PKC‑bound, this document could have registered **new algorithm identifiers** for each PKC‑bound combination.  However, that is not within the scope of this document.  This is meant for specific application context use-cases where the preventing key reuse is a desired security property.  For example, applications which choose to profile a set of composite signatures could choose to also adopt the use of this context.
 
 # Security Considerations
 
-**Key Reuse**: {{I-D.ietf-lamps-pq-composite-sigs}} strictly forbids reusing component keys across composite and non‑composite contexts. Binding `ctx` to `pkc` provides a cryptographic backstop: even if component keys were (improperly) reused, cross‑key splicing will fail because `pkc` differs for each public key instance.
+**Key Reuse**: {{I-D.ietf-lamps-pq-composite-sigs}} strictly forbids reusing component keys. Binding `ctx` to `pkc` provides a cryptographic backstop: even if component keys were (improperly) reused, cross‑key splicing will fail because `pkc` differs for each public key instance.
 
 **Non‑separability**: {{I-D.ietf-lamps-pq-composite-sigs}} achieved Weak Non‑Separability (WNS) and a limited form of SNS for ML‑DSA via the `mldsa_ctx=Label`. PKC‑binding additionally prevents forming `(mldsaSig1, tradSig2)` under different keys, because both signatures are now bounded to the same `pkc`. This does **not** fix primitive‑level malleability (e.g., ECDSA) and therefore does not claim SUF‑CMA.  However, for algorithms like EdDSA or Ed448 which are SUF secure, this property should remain.
 
@@ -182,7 +187,7 @@ Because wire compatibility requires peers to know whether `ctx` is application�
 
 **Signer Access to pk**: The signer computes `pkc` either by deriving `compositePK` from `compositeSK`, or by keeping a cached copy of `compositepk` alongside `compositesk`.
 
-**Interoperability**: Because `M'` changes when this context type is used, peers MUST know that this context will be used.  One way to achieve this is for application specific use cases to specify use of this context type as part of the usage.
+**Interoperability**: Because `M'` changes when this context type is used, peers MUST know that this context will be used.  One way to achieve this is for application specific use cases to specify this context type as part of the usage.  For example, if an application using composite signatures desired this security property, it could make use of the public key binding in the context mandatory.  
 
 
 # IANA Considerations
@@ -193,4 +198,4 @@ None
 
 # Acknowledgments
 
-Thanks to the Composite ML‑DSA authors and LAMPS WG for the existing design and analyses of pre‑hashing, non‑separability, and key‑reuse risks which this document builds upon.  Thanks to Lucas Prabel for his feedback on this document.
+Thanks to the Composite ML‑DSA authors and LAMPS WG for the existing design and analyses of pre‑hashing, non‑separability, and key‑reuse risks which this document builds upon.  Thanks to Daniel Van Geest for his feedback on this document.
