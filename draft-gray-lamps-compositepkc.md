@@ -60,7 +60,7 @@ M' :=  Prefix || Label || len(ctx) || ctx || PH( M )
 
 The `ctx` is an application context of up to 255 bytes.
 
-While the existing design already mitigates several cross‑protocol issues via `Prefix` and `Label`, and explicitly **forbids key reuse**, operational reality suggests some deployments may still reuse component keys or attempt to combine component signatures across keys. This opens the door to **cross‑key “mix‑and‑match” forgeries** (splicing a valid ML‑DSA component from one composite with a valid traditional component from another).
+While the existing design already mitigates several cross‑protocol issues via `Prefix` and `Label`, and explicitly **forbids key reuse**, some deployments may still reuse component keys or attempt to combine component signatures across keys. This opens the door to **cross‑key “mix‑and‑match” forgeries** (splicing a valid ML‑DSA component from one composite with a valid traditional component from another).
 
 This document proposes a **minimal change**: set `ctx` to a **hash of the composite public key**. Because the hash depends on the *exact* public key bytes, both component signatures become bound to the same key material, preventing cross‑key recombination.
 
@@ -73,7 +73,7 @@ This document inherits the notation of the Composite ML‑DSA draft (e.g., `Pref
 
 # Threat Model and Goals
 
-*Goal*: prevent an adversary from taking valid component signatures produced under **different** composite keys and combining them into a valid composite signature for a target key. The base document notes SUF‑CMA subtleties and “mix and match” where `(M, (mldsaSig1, tradSig2))` could be valid if both were obtained separately.
+*Goal*: prevent an adversary from taking valid component signatures produced under **different** composite keys and combining them into a valid composite signature for a target key.
 
 *Approach*: bind both component signatures to the **same exact composite public key** by including `pkc = H(SerializePublicKey(..))` inside `M'`. Because `pkc` changes with any bit of the key, component signatures extracted from different keys no longer verify together.
 
