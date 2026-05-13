@@ -34,8 +34,8 @@ author:
 
 
 normative:
-  I-D.draft-ietf-lamps-pq-composite-sigs:
-  I-D.draft-ietf-lamps-pq-composite-kem:
+  I-D.ietf-lamps-pq-composite-sigs:
+  I-D.ietf-lamps-pq-composite-kem:
   FIPS.204:
     title: "Module-Lattice-Based Digital Signature Standard"
     date: August 13, 2024
