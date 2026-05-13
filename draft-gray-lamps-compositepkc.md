@@ -117,7 +117,7 @@ Process:
 1.  (mldsaSeed, tradSK) = DeserializePrivateKey(sk)
 2.  (mldsaPK, mldsaSK) = ML-DSA.KeyGen_internal(mldsaSeed)     // FIPS 204, seed-based expansion
 4.  tradPK  = Trad.PublicKey(tradSK)                        // derive public key from private key
-5.  pk = SerializePublicKey(mldsaPK, tradPK)              
+5.  pk = SerializePublicKey(mldsaPK, tradPK)
 6.  pkc = Hash_ctx(pk)
 7.  return pkc
 ~~~
@@ -134,7 +134,7 @@ During the signing operation, access to the public key is required.  The above m
 
 4. Use an alternate private key encoding that explicitly carries the composite public key.
 
- 
+
 ## ComputePublicKeyContext from Public Key
 
 ~~~
