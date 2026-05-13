@@ -4,8 +4,9 @@
 
 Limited Additional Mechanisms for PKIX and SMIME                 J. Gray
 Internet-Draft                                                   Entrust
-Intended status: Informational                             14 March 2026
-Expires: 15 September 2026
+Intended status: Informational                                 L. Prabel
+Expires: 14 November 2026                                         Huawei
+                                                             13 May 2026
 
 
     Preventing Key Reuse and Cross-Key Forgeries in Composite ML-DSA
@@ -13,16 +14,16 @@ Expires: 15 September 2026
 
 Abstract
 
-   This document defines a small, backwards-compatible* change to
+   This document defines a small, backwards-compatible change to
    composite ML-DSA that *cryptographically binds the signature to the
    specific composite public key*. It does so by defining a *Public-Key
    Context* value (pkc) equal to a hash of the *serialized composite
    public key*, and by setting the composite context field to that
    value.  This prevents *key reuse* and *cross-key forgeries* across
-   different composite keys, while preserving the API surface of
-   Composite ML-DSA and related encodings.  The construction introduces
-   two helper procedures to compute pkc from either the composite
-   private key or the composite public key.
+   different composite keys, while preserving the API of Composite
+   ML-DSA.  The construction introduces two helper procedures to compute
+   pkc from either the composite private key or the composite public
+   key.
 
 Discussion Venues
 
@@ -51,7 +52,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 September 2026.
+   This Internet-Draft will expire on 14 November 2026.
 
 Copyright Notice
 
@@ -81,9 +82,11 @@ Table of Contents
    8.  Security Considerations
    9.  Implementation Considerations
    10. IANA Considerations
-   11. Normative References
-   Acknowledgments
-   Author's Address
+   11. References
+     11.1.  Normative References
+     11.2.  Informative References
+   Appendix A.  Acknowledgments
+   Authors' Addresses
 
 1.  Introduction
 
@@ -98,17 +101,16 @@ Table of Contents
    The ctx is an application context of up to 255 bytes.
 
    While the existing design already mitigates several cross-protocol
-   issues via Prefix and Label, and explicitly *forbids key reuse*,
-   operational reality suggests some deployments may still reuse
-   component keys or attempt to combine component signatures across
-   keys.  This opens the door to *cross-key “mix-and-match” forgeries*
-   (splicing a valid ML-DSA component from one composite with a valid
-   traditional component from another).
+   issues via Prefix and Label, and explicitly *forbids key reuse*, some
+   deployments may still reuse component keys or attempt to combine
+   component signatures across keys.  This opens the door to *cross-key
+   “mix-and-match” forgeries* (splicing a valid ML-DSA component from
+   one composite with a valid traditional component from another).
 
-   This document proposes a *minimal, mechanical change*: set ctx to a
-   *hash of the composite public key*. Because the hash depends on the
-   _exact_ public key bytes, both component signatures become bound to
-   the same key material, preventing cross-key recombination.
+   This document proposes a *minimal change*: set ctx to a *hash of the
+   composite public key*. Because the hash depends on the _exact_ public
+   key bytes, both component signatures become bound to the same key
+   material, preventing cross-key recombination.
 
 2.  Conventions and Definitions
 
@@ -126,9 +128,7 @@ Table of Contents
 
    _Goal_: prevent an adversary from taking valid component signatures
    produced under *different* composite keys and combining them into a
-   valid composite signature for a target key.  The base document notes
-   SUF-CMA subtleties and “mix and match” where (M, (mldsaSig1,
-   tradSig2)) could be valid if both were obtained separately.
+   valid composite signature for a target key.
 
    _Approach_: bind both component signatures to the *same exact
    composite public key* by including pkc = H(SerializePublicKey(..))
@@ -158,7 +158,7 @@ Table of Contents
    Prefix and Label are unchanged. len(pkc) is encoded as a single
    unsigned byte, which is sufficient because the mandated hash outputs
    are ≤ 64 bytes.  The PH(M) is the pre-hash of the application message
-   as in the base document.
+   as in [I-D.ietf-lamps-pq-composite-sigs].
 
 5.  Public-Key Context (PKC) Routines
 
@@ -170,7 +170,7 @@ Table of Contents
 Composite-ML-DSA<OID>.ComputePublicKeyContext(sk) -> pkc
 
 Inputs:
-sk: composite private key (serialized as in Section 4.2 of the base spec)
+sk: composite private key
 
 Implicit inputs (from <OID>):
 Hash_ctx: the hash function for PKC (same as the algorithm’s PH unless specified otherwise)
@@ -178,33 +178,59 @@ Hash_ctx: the hash function for PKC (same as the algorithm’s PH unless specifi
 Process:
 
 1.  (mldsaSeed, tradSK) = DeserializePrivateKey(sk)
-2.  (_, mldsaSK) = ML-DSA.KeyGen_internal(mldsaSeed)        // base spec, seed-based expansion
-3.  mldsaPK = ML-DSA.PublicKey(mldsaSK)                     // or derived during step 2
-4.  tradPK  = Trad.PublicKey(tradSK)                        // algorithm-specific derivation
-5.  pk = SerializePublicKey(mldsaPK, tradPK)                // base spec Section 4.1
+2.  (mldsaPK, mldsaSK) = ML-DSA.KeyGen_internal(mldsaSeed)     // FIPS 204, seed-based expansion
+4.  tradPK  = Trad.PublicKey(tradSK)                        // derive public key from private key
+5.  pk = SerializePublicKey(mldsaPK, tradPK)
 6.  pkc = Hash_ctx(pk)
 7.  return pkc
 
       Notes: The seed-based ML-DSA private key representation and the
       ability to re-derive mldsaPK from mldsaSeed are already normative
-      in the base specification.
+      in [I-D.ietf-lamps-pq-composite-sigs]
 
-   TODO: Add the text on how to computer public from Private (like we
-   did in Composite KEM).
+   During the signing operation, access to the public key is required.
+   The above method suggests generating the composite public key from
+   the composite private key by Deserializing the private key into its
+   component keys, deriving the public component key for ML-DSA and the
+   public component key for the traditional component, and then using
+   the SerializePublicKey() method as defined in section 4.1
+   [I-D.ietf-lamps-pq-composite-sigs].  This is only one of several
+   options, but is a non-normative, non-exhautive list.
+
+   1.  Derive or extract from private key as suggested above.  Many
+       cryptographic modules expose functionality to obtain an RSA or EC
+       public key from the corresponding private key.  For applications
+       where such functionality does not exist, see section 10.4.1 and
+       10.4.2 in [I-D.ietf-lamps-pq-composite-kem] for mechanisms for
+       extracting the public keys from private keys for RSA and ECDSA
+       respectively.  It is assumed that this is not required for
+       Ed25519 or Ed448 since those private keys are seeds from which
+       the public key can be obtained.
+
+   2.  Fetch it from an external data source, for example from the
+       public-key certificate corresponding to this private key.
+
+   3.  If the composite signature private key is being carried within a
+       PKCS#8 OneAsymmetricKey object, place the full composite public
+       key within the optional OneAsymmetricKey.publicKey field (and re-
+       encode as necessary for correctly using it in the context).
+
+   4.  Use an alternate private key encoding that explicitly carries the
+       composite public key.
 
 5.2.  ComputePublicKeyContext from Public Key
 
-Composite-ML-DSA<OID>.ComputePublicKeyContext(pk) -> pkc
+   Composite-ML-DSA<OID>.ComputePublicKeyContext(pk) -> pkc
 
-Inputs:
-pk: composite public key (serialized as in Section 4.1 of the base spec)
+   Inputs:
+   pk: composite public key
 
-Implicit inputs (from <OID>):
-Hash_ctx
+   Implicit inputs (from <OID>):
+   Hash_ctx
 
-Process:
-1.  pkc = Hash_ctx(pk)
-2.  return pkc
+   Process:
+   1.  pkc = Hash_ctx(pk)
+   2.  return pkc
 
 6.  Algorithms
 
@@ -221,26 +247,28 @@ Process:
 7.  Serialization and ASN.1 Usage
 
    This document *does not* change the composite public/private key or
-   signature *serialization formats* from the base spec—keys and
-   signatures remain concatenations of the component encodings.  It also
-   does not change DER wrapping in SPKI/PKCS#8.
+   signature *serialization formats* from
+   [I-D.ietf-lamps-pq-composite-sigs] and signatures remain
+   concatenations of the component encodings.  It also does not change
+   DER wrapping in SPKI/PKCS#8.
 
    Because wire compatibility requires peers to know whether ctx is
-   application-set or PKC-bound, this document could haved register *new
-   algorithm identifiers* for each PKC-bound combination.  However, that
-   is not within the scope of this document.  This is meant for specific
-   application context use-cases where the preventing key reuse is a
-   desired security property.
+   application-set or PKC-bound, this document could have registered
+   *new algorithm identifiers* for each PKC-bound combination.  However,
+   that is not within the scope of this document.  This is meant for
+   specific application context use-cases where the preventing key reuse
+   is a desired security property.  For example, applications which
+   choose to profile a set of composite signatures could choose to also
+   adopt the use of this context.
 
 8.  Security Considerations
 
-   *Key Reuse*: The base spec strictly forbids reusing component keys
-   across composite and non-composite contexts or across composites.
-   Binding ctx to pkc provides a cryptographic backstop: even if
-   component keys were (improperly) reused, cross-key splicing will fail
-   because pkc differs for each public key instance.
+   *Key Reuse*: [I-D.ietf-lamps-pq-composite-sigs] strictly forbids
+   reusing component keys.  Binding ctx to pkc provides a cryptographic
+   backstop: even if component keys were (improperly) reused, cross-key
+   splicing will fail because pkc differs for each public key instance.
 
-   *Non-separability*: The base construction achieved Weak
+   *Non-separability*: [I-D.ietf-lamps-pq-composite-sigs] achieved Weak
    Non-Separability (WNS) and a limited form of SNS for ML-DSA via the
    mldsa_ctx=Label.  PKC-binding additionally prevents forming
    (mldsaSig1, tradSig2) under different keys, because both signatures
@@ -249,9 +277,9 @@ Process:
    However, for algorithms like EdDSA or Ed448 which are SUF secure,
    this property should remain.
 
-   *Prefix Guard*: Existing *Prefix* and *Label* remain unchanged;
-   deployments that implemented the optional Prefix guard for
-   traditional verifiers can keep it as is.
+   *Prefix*: Existing *Prefix* and *Label* remain unchanged; deployments
+   that implemented the optional Prefix in traditional verifiers can
+   keep it as is.
 
    *Hash Choices*: Hash_ctx MUST be the algorithm’s registered pre-hash
    function (e.g., SHA-256, SHA-512, SHAKE256/64).  This keeps
@@ -264,18 +292,46 @@ Process:
 9.  Implementation Considerations
 
    *Signer Access to pk*: The signer computes pkc either by deriving
-   tradPK from tradSK, or by keeping a cached copy of pk alongside sk.
+   compositePK from compositeSK, or by keeping a cached copy of
+   compositepk alongside compositesk.
 
    *Interoperability*: Because M' changes when this context type is
    used, peers MUST know that this context will be used.  One way to
-   achieve this is for application specific use cases to specify use of
-   this context type as part of the usage.
+   achieve this is for application specific use cases to specify this
+   context type as part of the usage.  For example, if an application
+   using composite signatures desired this security property, it could
+   make use of the public key binding in the context mandatory.
 
 10.  IANA Considerations
 
    None
 
-11.  Normative References
+11.  References
+
+11.1.  Normative References
+
+   [FIPS.204] National Institute of Standards and Technology (NIST),
+              "Module-Lattice-Based Digital Signature Standard", FIPS
+              PUB 204, August 2024,
+              <https://nvlpubs.nist.gov/nistpubs/FIPS/
+              NIST.FIPS.204.pdf>.
+
+   [I-D.ietf-lamps-pq-composite-kem]
+              Ounsworth, M., Gray, J., Pala, M., Klaußner, J., and S.
+              Fluhrer, "Composite ML-KEM for use in X.509 Public Key
+              Infrastructure", Work in Progress, Internet-Draft, draft-
+              ietf-lamps-pq-composite-kem-14, 27 March 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-lamps-
+              pq-composite-kem-14>.
+
+   [I-D.ietf-lamps-pq-composite-sigs]
+              Ounsworth, M., Gray, J., Pala, M., Klaußner, J., and S.
+              Fluhrer, "Composite Module-Lattice-Based Digital Signature
+              Algorithm (ML-DSA) for use in X.509 Public Key
+              Infrastructure", Work in Progress, Internet-Draft, draft-
+              ietf-lamps-pq-composite-sigs-19, 21 April 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-lamps-
+              pq-composite-sigs-19>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -286,13 +342,23 @@ Process:
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
-Acknowledgments
+11.2.  Informative References
+
+   [I-D.draft-ietf-pquip-hybrid-signature-spectrums-07]
+              Bindel, N., Hale, B., Connolly, D., and F. D, "Hybrid
+              signature spectrums", Work in Progress, Internet-Draft,
+              draft-ietf-pquip-hybrid-signature-spectrums-07, 20 June
+              2025, <https://datatracker.ietf.org/doc/html/draft-ietf-
+              pquip-hybrid-signature-spectrums-07>.
+
+Appendix A.  Acknowledgments
 
    Thanks to the Composite ML-DSA authors and LAMPS WG for the existing
-   combiner design and analyses of pre-hashing, non-separability, and
-   key-reuse risks which this document builds upon.
+   design and analyses of pre-hashing, non-separability, and key-reuse
+   risks which this document builds upon.  Thanks to Daniel Van Geest
+   for his feedback on this document.
 
-Author's Address
+Authors' Addresses
 
    John Gray
    Entrust Limited
@@ -300,3 +366,8 @@ Author's Address
    Ottawa, Ontario  K2K 3G5
    Canada
    Email: john.gray@entrust.com
+
+
+   Lucas Prabel
+   Huawei
+   Email: lucas.prabel@huawei.com
