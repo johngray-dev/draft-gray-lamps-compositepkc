@@ -120,8 +120,8 @@ Hash_ctx: the hash function for PKC (same as the algorithm’s PH unless specifi
 Process:
 
 1.  (mldsaSeed, tradSK) = DeserializePrivateKey(sk)
-2.  (mldsaPK, mldsaSK) = ML-DSA.KeyGen_internal(mldsaSeed) 
-4.  tradPK  = Trad.PublicKey(tradSK) 
+2.  (mldsaPK, mldsaSK) = ML-DSA.KeyGen_internal(mldsaSeed)
+4.  tradPK  = Trad.PublicKey(tradSK)
 5.  pk = SerializePublicKey(mldsaPK, tradPK)
 6.  pkc = Hash_ctx(pk)
 7.  return pkc
