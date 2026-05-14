@@ -8,7 +8,7 @@
 <meta content="John Gray" name="author">
 <meta content="Lucas Prabel" name="author">
 <meta content="
-       This document defines a small, backwards‑compatible change to composite ML-DSA that  cryptographically binds the signature to the specific composite public key . It does so by defining a  Public‑Key Context  value ( pkc ) equal to a hash of the  serialized composite public key , and by setting the composite context field to that value. This prevents  key reuse  and  cross‑key forgeries  across different composite keys, while preserving the API of Composite ML‑DSA. The construction introduces two helper procedures to compute  pkc  from either the composite private key or the composite public key. 
+       This document defines a small, backwards‑compatible change to composite ML-DSA that cryptographically binds the signature to the specific composite public key. It does so by defining a Public‑Key Context value ( pkc ) equal to a hash of the serialized composite public key, and by setting the composite context field to that value. This prevents key reuse and cross‑key forgeries across different composite keys, while preserving the API of Composite ML‑DSA. The construction introduces two helper procedures to compute  pkc  from either the composite private key or the composite public key. 
     " name="description">
 <meta content="xml2rfc 3.33.0" name="generator">
 <meta content="composite signatures" name="keyword">
@@ -1051,7 +1051,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Gray &amp; Prabel</td>
-<td class="center">Expires 14 November 2026</td>
+<td class="center">Expires 15 November 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1064,12 +1064,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-gray-lamps-compositepkc-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-05-13" class="published">13 May 2026</time>
+<time datetime="2026-05-14" class="published">14 May 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-11-14">14 November 2026</time></dd>
+<dd class="expires"><time datetime="2026-11-15">15 November 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1086,7 +1086,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">Preventing Key Reuse and Cross‑Key Forgeries in Composite ML-DSA</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document defines a small, backwards‑compatible change to composite ML-DSA that <strong>cryptographically binds the signature to the specific composite public key</strong>. It does so by defining a <strong>Public‑Key Context</strong> value (<code>pkc</code>) equal to a hash of the <strong>serialized composite public key</strong>, and by setting the composite context field to that value. This prevents <strong>key reuse</strong> and <strong>cross‑key forgeries</strong> across different composite keys, while preserving the API of Composite ML‑DSA. The construction introduces two helper procedures to compute <code>pkc</code> from either the composite private key or the composite public key.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines a small, backwards‑compatible change to composite ML-DSA that cryptographically binds the signature to the specific composite public key. It does so by defining a Public‑Key Context value (<code>pkc</code>) equal to a hash of the serialized composite public key, and by setting the composite context field to that value. This prevents key reuse and cross‑key forgeries across different composite keys, while preserving the API of Composite ML‑DSA. The construction introduces two helper procedures to compute <code>pkc</code> from either the composite private key or the composite public key.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1118,7 +1118,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 14 November 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 15 November 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1211,15 +1211,15 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">Composite signature schemes (e.g., Composite ML‑DSA) pre-hash the application message and prepend a <strong>Prefix</strong>, an algorithm‑specific <strong>Label</strong>, and an application‑provided <strong>ctx</strong> byte string to form the message representative <code>M'</code>, which is then signed by each component primitive. The current composite signature construction:<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-1">Composite signature schemes (e.g., Composite ML‑DSA) pre-hash the application message and prepend a Prefix, an algorithm‑specific Label, and an application‑provided ctx byte string to form the message representative <code>M'</code>, which is then signed by each component primitive. The current composite signature construction:<a href="#section-1-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-1-2">
 <pre>
 M' :=  Prefix || Label || len(ctx) || ctx || PH( M )
 </pre><a href="#section-1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-1-3">The <code>ctx</code> is an application context of up to 255 bytes.<a href="#section-1-3" class="pilcrow">¶</a></p>
-<p id="section-1-4">While the existing design already mitigates several cross‑protocol issues via <code>Prefix</code> and <code>Label</code>, and explicitly <strong>forbids key reuse</strong>, some deployments may still reuse component keys or attempt to combine component signatures across keys. This opens the door to <strong>cross‑key “mix‑and‑match” forgeries</strong> (splicing a valid ML‑DSA component from one composite with a valid traditional component from another).<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5">This document proposes a <strong>minimal change</strong>: set <code>ctx</code> to a <strong>hash of the composite public key</strong>. Because the hash depends on the <em>exact</em> public key bytes, both component signatures become bound to the same key material, preventing cross‑key recombination.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-4">While the existing design already mitigates several cross‑protocol issues via <code>Prefix</code> and <code>Label</code>, and explicitly forbids key reuse, some deployments may still reuse component keys or attempt to combine component signatures across keys. This opens the door to cross‑key “mix‑and‑match” forgeries (splicing a valid ML‑DSA component from one composite with a valid traditional component from another).<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">This document proposes a minimal change: set <code>ctx</code> to a hash of the composite public key. Because the hash depends on the exact public key bytes, both component signatures become bound to the same key material, preventing cross‑key recombination.<a href="#section-1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1227,7 +1227,7 @@ M' :=  Prefix || Label || len(ctx) || ctx || PH( M )
       <h2 id="name-conventions-and-definitions">
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
       </h2>
-<p id="section-2-1">This document inherits the notation of the Composite ML‑DSA draft (e.g., <code>Prefix</code>, <code>Label</code>, <code>PH</code>, <code>SerializePublicKey</code>, etc.) and the conventional <strong>KeyGen/Sign/Verify</strong> API of a signature scheme.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-1">This document inherits the notation of the Composite ML‑DSA draft (e.g., <code>Prefix</code>, <code>Label</code>, <code>PH</code>, <code>SerializePublicKey</code>, etc.) and the conventional KeyGen/Sign/Verify API of a signature scheme.<a href="#section-2-1" class="pilcrow">¶</a></p>
 <p id="section-2-2">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
 "<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
 described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
@@ -1239,11 +1239,11 @@ appear in all capitals, as shown here.<a href="#section-2-2" class="pilcrow">¶<
       <h2 id="name-threat-model-and-goals">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-threat-model-and-goals" class="section-name selfRef">Threat Model and Goals</a>
       </h2>
-<p id="section-3-1"><em>Goal</em>: prevent an adversary from taking valid component signatures produced under <strong>different</strong> composite keys and combining them into a valid composite signature for a target key.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2"><em>Approach</em>: bind both component signatures to the <strong>same exact composite public key</strong> by including <code>pkc = H(SerializePublicKey(..))</code> inside <code>M'</code>. Because <code>pkc</code> changes with any bit of the key, component signatures extracted from different keys no longer verify together.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-1">Goal: prevent an adversary from taking valid component signatures produced under different composite keys and combining them into a valid composite signature for a target key.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">Approach: bind both component signatures to the same exact composite public key by including <code>pkc = H(SerializePublicKey(..))</code> inside <code>M'</code>. Because <code>pkc</code> changes with any bit of the key, component signatures extracted from different keys no longer verify together.<a href="#section-3-2" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3-3.1">
-          <p id="section-3-3.1.1">This does <strong>not</strong> change the malleability properties of individual primitives (e.g., ECDSA); therefore SUF‑CMA is still not claimed. It primarily removes <strong>cross‑key</strong> splicing and reduces the impact of accidental key reuse.<a href="#section-3-3.1.1" class="pilcrow">¶</a></p>
+          <p id="section-3-3.1.1">This does not change the malleability properties of individual primitives (e.g., ECDSA); therefore SUF‑CMA is still not claimed. It primarily removes cross‑key splicing and reduces the impact of accidental key reuse.<a href="#section-3-3.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1254,7 +1254,7 @@ appear in all capitals, as shown here.<a href="#section-2-2" class="pilcrow">¶<
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-overview-of-the-constructio" class="section-name selfRef">Overview of the Construction</a>
       </h2>
 <p id="section-4-1">This construction proposes <code>len(pkc)</code> as the length of the <code>len(ctx)</code> and <code>pkc</code> as the <code>ctx</code> value; all signature computation remains as specified in the base document.<a href="#section-4-1" class="pilcrow">¶</a></p>
-<p id="section-4-2">Let <code>Hash_ctx</code> denote the hash function chosen by the algorithm’s OID (e.g., SHA‑256, SHA‑512, SHAKE256/64). The <strong>Public‑Key Context</strong> is:<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-2">Let <code>Hash_ctx</code> denote the hash function chosen by the algorithm’s OID (e.g., SHA‑256, SHA‑512, SHAKE256/64). The Public‑Key Context is:<a href="#section-4-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4-3">
 <pre>
 pkc = Hash_ctx( SerializePublicKey(mldsaPK, tradPK) )
@@ -1293,8 +1293,8 @@ Hash_ctx: the hash function for PKC (same as the algorithm’s PH unless specifi
 Process:
 
 1.  (mldsaSeed, tradSK) = DeserializePrivateKey(sk)
-2.  (mldsaPK, mldsaSK) = ML-DSA.KeyGen_internal(mldsaSeed)     // FIPS 204, seed-based expansion
-4.  tradPK  = Trad.PublicKey(tradSK)                        // derive public key from private key
+2.  (mldsaPK, mldsaSK) = ML-DSA.KeyGen_internal(mldsaSeed)
+4.  tradPK  = Trad.PublicKey(tradSK)
 5.  pk = SerializePublicKey(mldsaPK, tradPK)
 6.  pkc = Hash_ctx(pk)
 7.  return pkc
@@ -1353,7 +1353,7 @@ Process:
       </h2>
 <p id="section-6-1">Both <code>Composite-ML-DSA&lt;OID&gt;.Sign(sk, M, ctx)</code> and <code>Composite-ML-DSA&lt;OID&gt;.Verify(pk, M, s, ctx)</code> remain the same.   The only difference is that pkc is passed in as the ctx value.<a href="#section-6-1" class="pilcrow">¶</a></p>
 <p id="section-6-2">The signature interface remains the same.<a href="#section-6-2" class="pilcrow">¶</a></p>
-<p id="section-6-3">Note:  The application specific <code>ctx</code> argument is <strong>ignored</strong> with this current design.  To keep that property, a future version of this specification could set <code>pkc = HASH (ctx || publickey)</code>.<a href="#section-6-3" class="pilcrow">¶</a></p>
+<p id="section-6-3">Note:  The application specific <code>ctx</code> argument is ignored with this current design.  To keep that property, a future version of this specification could set <code>pkc = HASH (ctx || publickey)</code>.<a href="#section-6-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="serialization-and-asn1-usage">
@@ -1361,8 +1361,8 @@ Process:
       <h2 id="name-serialization-and-asn1-usag">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-serialization-and-asn1-usag" class="section-name selfRef">Serialization and ASN.1 Usage</a>
       </h2>
-<p id="section-7-1">This document <strong>does not</strong> change the composite public/private key or signature <strong>serialization formats</strong> from <span>[<a href="#I-D.ietf-lamps-pq-composite-sigs" class="cite xref">I-D.ietf-lamps-pq-composite-sigs</a>]</span> and signatures remain concatenations of the component encodings. It also does not change DER wrapping in SPKI/PKCS#8.<a href="#section-7-1" class="pilcrow">¶</a></p>
-<p id="section-7-2">Because wire compatibility requires peers to know whether <code>ctx</code> is application‑set or PKC‑bound, this document could have registered <strong>new algorithm identifiers</strong> for each PKC‑bound combination.  However, that is not within the scope of this document.  This is meant for specific application context use-cases where the preventing key reuse is a desired security property.  For example, applications which choose to profile a set of composite signatures could choose to also adopt the use of this context.<a href="#section-7-2" class="pilcrow">¶</a></p>
+<p id="section-7-1">This document does not change the composite public/private key or signature serialization formats from <span>[<a href="#I-D.ietf-lamps-pq-composite-sigs" class="cite xref">I-D.ietf-lamps-pq-composite-sigs</a>]</span> and signatures remain concatenations of the component encodings. It also does not change DER wrapping in SPKI/PKCS#8.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">Because wire compatibility requires peers to know whether <code>ctx</code> is application‑set or PKC‑bound, this document could have registered new algorithm identifiers for each PKC‑bound combination.  However, that is not within the scope of this document.  This is meant for specific application context use-cases where the preventing key reuse is a desired security property.  For example, applications which choose to profile a set of composite signatures could choose to also adopt the use of this context.<a href="#section-7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
@@ -1370,11 +1370,11 @@ Process:
       <h2 id="name-security-considerations">
 <a href="#section-8" class="section-number selfRef">8. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-8-1"><strong>Key Reuse</strong>: <span>[<a href="#I-D.ietf-lamps-pq-composite-sigs" class="cite xref">I-D.ietf-lamps-pq-composite-sigs</a>]</span> strictly forbids reusing component keys. Binding <code>ctx</code> to <code>pkc</code> provides a cryptographic backstop: even if component keys were (improperly) reused, cross‑key splicing will fail because <code>pkc</code> differs for each public key instance.<a href="#section-8-1" class="pilcrow">¶</a></p>
-<p id="section-8-2"><strong>Non‑separability</strong>: <span>[<a href="#I-D.ietf-lamps-pq-composite-sigs" class="cite xref">I-D.ietf-lamps-pq-composite-sigs</a>]</span> achieved Weak Non‑Separability (WNS) and a limited form of SNS for ML‑DSA via the <code>mldsa_ctx=Label</code>. PKC‑binding additionally prevents forming <code>(mldsaSig1, tradSig2)</code> under different keys, because both signatures are now bounded to the same <code>pkc</code>. This does <strong>not</strong> fix primitive‑level malleability (e.g., ECDSA) and therefore does not claim SUF‑CMA.  However, for algorithms like EdDSA or Ed448 which are SUF secure, this property should remain.<a href="#section-8-2" class="pilcrow">¶</a></p>
-<p id="section-8-3"><strong>Prefix</strong>: Existing <strong>Prefix</strong> and <strong>Label</strong> remain unchanged; deployments that implemented the optional Prefix in traditional verifiers can keep it as is.<a href="#section-8-3" class="pilcrow">¶</a></p>
-<p id="section-8-4"><strong>Hash Choices</strong>: <code>Hash_ctx</code> <span class="bcp14">MUST</span> be the algorithm’s registered pre‑hash function (e.g., SHA‑256, SHA‑512, SHAKE256/64). This keeps implementation complexity minimal and ensures digest sizes fit within the ctx length field.<a href="#section-8-4" class="pilcrow">¶</a></p>
-<p id="section-8-5"><strong>Privacy</strong>: <code>pkc</code> reveals nothing beyond what the public key already reveals; it is a hash of public data.<a href="#section-8-5" class="pilcrow">¶</a></p>
+<p id="section-8-1">Key Reuse: <span>[<a href="#I-D.ietf-lamps-pq-composite-sigs" class="cite xref">I-D.ietf-lamps-pq-composite-sigs</a>]</span> strictly forbids reusing component keys. Binding <code>ctx</code> to <code>pkc</code> provides a cryptographic backstop: even if component keys were (improperly) reused, cross‑key splicing will fail because <code>pkc</code> differs for each public key instance.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-2">Non‑separability: <span>[<a href="#I-D.ietf-lamps-pq-composite-sigs" class="cite xref">I-D.ietf-lamps-pq-composite-sigs</a>]</span> achieved Weak Non‑Separability (WNS) and a limited form of SNS for ML‑DSA via the <code>mldsa_ctx=Label</code>. PKC‑binding additionally prevents forming <code>(mldsaSig1, tradSig2)</code> under different keys, because both signatures are now bounded to the same <code>pkc</code>. This does not fix primitive‑level malleability (e.g., ECDSA) and therefore does not claim SUF‑CMA.  However, for algorithms like EdDSA or Ed448 which are SUF secure, this property should remain.<a href="#section-8-2" class="pilcrow">¶</a></p>
+<p id="section-8-3">Prefix: The existing Prefix and Label remain unchanged; deployments that implemented the optional Prefix in traditional verifiers can keep it as is.<a href="#section-8-3" class="pilcrow">¶</a></p>
+<p id="section-8-4">Hash Choices: <code>Hash_ctx</code> <span class="bcp14">MUST</span> be the algorithm’s registered pre‑hash function (e.g., SHA‑256, SHA‑512, SHAKE256/64). This keeps implementation complexity minimal and ensures digest sizes fit within the ctx length field.<a href="#section-8-4" class="pilcrow">¶</a></p>
+<p id="section-8-5">Privacy: <code>pkc</code> reveals nothing beyond what the public key already reveals; it is a hash of public data.<a href="#section-8-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="implementation-considerations">
@@ -1382,8 +1382,8 @@ Process:
       <h2 id="name-implementation-consideratio">
 <a href="#section-9" class="section-number selfRef">9. </a><a href="#name-implementation-consideratio" class="section-name selfRef">Implementation Considerations</a>
       </h2>
-<p id="section-9-1"><strong>Signer Access to pk</strong>: The signer computes <code>pkc</code> either by deriving <code>compositePK</code> from <code>compositeSK</code>, or by keeping a cached copy of <code>compositepk</code> alongside <code>compositesk</code>.<a href="#section-9-1" class="pilcrow">¶</a></p>
-<p id="section-9-2"><strong>Interoperability</strong>: Because <code>M'</code> changes when this context type is used, peers <span class="bcp14">MUST</span> know that this context will be used.  One way to achieve this is for application specific use cases to specify this context type as part of the usage.  For example, if an application using composite signatures desired this security property, it could make use of the public key binding in the context mandatory.<a href="#section-9-2" class="pilcrow">¶</a></p>
+<p id="section-9-1">Signer Access to pk: The signer computes <code>pkc</code> either by deriving <code>compositePK</code> from <code>compositeSK</code>, or by keeping a cached copy of <code>compositepk</code> alongside <code>compositesk</code>.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-2">Interoperability: Because <code>M'</code> changes when this context type is used, peers <span class="bcp14">MUST</span> know that this context will be used.  One way to achieve this is for application specific use cases to specify this context type as part of the usage.  For example, if an application using composite signatures desired this security property, it could make use of the public key binding in the context mandatory.<a href="#section-9-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
