@@ -51,13 +51,13 @@ informative:
 
 --- abstract
 
-This document defines a small, backwards‑compatible change to composite ML-DSA that **cryptographically binds the signature to the specific composite public key**. It does so by defining a **Public‑Key Context** value (`pkc`) equal to a hash of the **serialized composite public key**, and by setting the composite context field to that value. This prevents **key reuse** and **cross‑key forgeries** across different composite keys, while preserving the API of Composite ML‑DSA. The construction introduces two helper procedures to compute `pkc` from either the composite private key or the composite public key.
+This document defines a small, backwards‑compatible change to composite ML-DSA that cryptographically binds the signature to the specific composite public key. It does so by defining a Public‑Key Context value (`pkc`) equal to a hash of the serialized composite public key, and by setting the composite context field to that value. This prevents key reuse and cross‑key forgeries across different composite keys, while preserving the API of Composite ML‑DSA. The construction introduces two helper procedures to compute `pkc` from either the composite private key or the composite public key.
 
 --- middle
 
 # Introduction
 
-Composite signature schemes (e.g., Composite ML‑DSA) pre-hash the application message and prepend a **Prefix**, an algorithm‑specific **Label**, and an application‑provided **ctx** byte string to form the message representative `M'`, which is then signed by each component primitive. The current composite signature construction:
+Composite signature schemes (e.g., Composite ML‑DSA) pre-hash the application message and prepend a Prefix, an algorithm‑specific Label, and an application‑provided ctx byte string to form the message representative `M'`, which is then signed by each component primitive. The current composite signature construction:
 
 ~~~
 M' :=  Prefix || Label || len(ctx) || ctx || PH( M )
@@ -65,30 +65,30 @@ M' :=  Prefix || Label || len(ctx) || ctx || PH( M )
 
 The `ctx` is an application context of up to 255 bytes.
 
-While the existing design already mitigates several cross‑protocol issues via `Prefix` and `Label`, and explicitly **forbids key reuse**, some deployments may still reuse component keys or attempt to combine component signatures across keys. This opens the door to **cross‑key “mix‑and‑match” forgeries** (splicing a valid ML‑DSA component from one composite with a valid traditional component from another).
+While the existing design already mitigates several cross‑protocol issues via `Prefix` and `Label`, and explicitly forbids key reuse, some deployments may still reuse component keys or attempt to combine component signatures across keys. This opens the door to cross‑key “mix‑and‑match” forgeries (splicing a valid ML‑DSA component from one composite with a valid traditional component from another).
 
-This document proposes a **minimal change**: set `ctx` to a **hash of the composite public key**. Because the hash depends on the *exact* public key bytes, both component signatures become bound to the same key material, preventing cross‑key recombination.
+This document proposes a minimal change: set `ctx` to a hash of the composite public key. Because the hash depends on the exact public key bytes, both component signatures become bound to the same key material, preventing cross‑key recombination.
 
 
 # Conventions and Definitions
 
-This document inherits the notation of the Composite ML‑DSA draft (e.g., `Prefix`, `Label`, `PH`, `SerializePublicKey`, etc.) and the conventional **KeyGen/Sign/Verify** API of a signature scheme.
+This document inherits the notation of the Composite ML‑DSA draft (e.g., `Prefix`, `Label`, `PH`, `SerializePublicKey`, etc.) and the conventional KeyGen/Sign/Verify API of a signature scheme.
 
 {::boilerplate bcp14-tagged}
 
 # Threat Model and Goals
 
-*Goal*: prevent an adversary from taking valid component signatures produced under **different** composite keys and combining them into a valid composite signature for a target key.
+Goal: prevent an adversary from taking valid component signatures produced under different composite keys and combining them into a valid composite signature for a target key.
 
-*Approach*: bind both component signatures to the **same exact composite public key** by including `pkc = H(SerializePublicKey(..))` inside `M'`. Because `pkc` changes with any bit of the key, component signatures extracted from different keys no longer verify together.
+Approach: bind both component signatures to the same exact composite public key by including `pkc = H(SerializePublicKey(..))` inside `M'`. Because `pkc` changes with any bit of the key, component signatures extracted from different keys no longer verify together.
 
-> This does **not** change the malleability properties of individual primitives (e.g., ECDSA); therefore SUF‑CMA is still not claimed. It primarily removes **cross‑key** splicing and reduces the impact of accidental key reuse.
+> This does not change the malleability properties of individual primitives (e.g., ECDSA); therefore SUF‑CMA is still not claimed. It primarily removes cross‑key splicing and reduces the impact of accidental key reuse.
 
 # Overview of the Construction
 
 This construction proposes `len(pkc)` as the length of the `len(ctx)` and `pkc` as the `ctx` value; all signature computation remains as specified in the base document.
 
-Let `Hash_ctx` denote the hash function chosen by the algorithm’s OID (e.g., SHA‑256, SHA‑512, SHAKE256/64). The **Public‑Key Context** is:
+Let `Hash_ctx` denote the hash function chosen by the algorithm’s OID (e.g., SHA‑256, SHA‑512, SHAKE256/64). The Public‑Key Context is:
 
 ~~~
 pkc = Hash_ctx( SerializePublicKey(mldsaPK, tradPK) )
@@ -120,8 +120,8 @@ Hash_ctx: the hash function for PKC (same as the algorithm’s PH unless specifi
 Process:
 
 1.  (mldsaSeed, tradSK) = DeserializePrivateKey(sk)
-2.  (mldsaPK, mldsaSK) = ML-DSA.KeyGen_internal(mldsaSeed)     // FIPS 204, seed-based expansion
-4.  tradPK  = Trad.PublicKey(tradSK)                        // derive public key from private key
+2.  (mldsaPK, mldsaSK) = ML-DSA.KeyGen_internal(mldsaSeed) 
+4.  tradPK  = Trad.PublicKey(tradSK) 
 5.  pk = SerializePublicKey(mldsaPK, tradPK)
 6.  pkc = Hash_ctx(pk)
 7.  return pkc
@@ -162,32 +162,32 @@ Both `Composite-ML-DSA<OID>.Sign(sk, M, ctx)` and `Composite-ML-DSA<OID>.Verify(
 
 The signature interface remains the same.
 
-Note:  The application specific `ctx` argument is **ignored** with this current design.  To keep that property, a future version of this specification could set `pkc = HASH (ctx || publickey)`.
+Note:  The application specific `ctx` argument is ignored with this current design.  To keep that property, a future version of this specification could set `pkc = HASH (ctx || publickey)`.
 
 # Serialization and ASN.1 Usage
 
-This document **does not** change the composite public/private key or signature **serialization formats** from {{I-D.ietf-lamps-pq-composite-sigs}} and signatures remain concatenations of the component encodings. It also does not change DER wrapping in SPKI/PKCS#8.
+This document does not change the composite public/private key or signature serialization formats from {{I-D.ietf-lamps-pq-composite-sigs}} and signatures remain concatenations of the component encodings. It also does not change DER wrapping in SPKI/PKCS#8.
 
-Because wire compatibility requires peers to know whether `ctx` is application‑set or PKC‑bound, this document could have registered **new algorithm identifiers** for each PKC‑bound combination.  However, that is not within the scope of this document.  This is meant for specific application context use-cases where the preventing key reuse is a desired security property.  For example, applications which choose to profile a set of composite signatures could choose to also adopt the use of this context.
+Because wire compatibility requires peers to know whether `ctx` is application‑set or PKC‑bound, this document could have registered new algorithm identifiers for each PKC‑bound combination.  However, that is not within the scope of this document.  This is meant for specific application context use-cases where the preventing key reuse is a desired security property.  For example, applications which choose to profile a set of composite signatures could choose to also adopt the use of this context.
 
 # Security Considerations
 
-**Key Reuse**: {{I-D.ietf-lamps-pq-composite-sigs}} strictly forbids reusing component keys. Binding `ctx` to `pkc` provides a cryptographic backstop: even if component keys were (improperly) reused, cross‑key splicing will fail because `pkc` differs for each public key instance.
+Key Reuse: {{I-D.ietf-lamps-pq-composite-sigs}} strictly forbids reusing component keys. Binding `ctx` to `pkc` provides a cryptographic backstop: even if component keys were (improperly) reused, cross‑key splicing will fail because `pkc` differs for each public key instance.
 
-**Non‑separability**: {{I-D.ietf-lamps-pq-composite-sigs}} achieved Weak Non‑Separability (WNS) and a limited form of SNS for ML‑DSA via the `mldsa_ctx=Label`. PKC‑binding additionally prevents forming `(mldsaSig1, tradSig2)` under different keys, because both signatures are now bounded to the same `pkc`. This does **not** fix primitive‑level malleability (e.g., ECDSA) and therefore does not claim SUF‑CMA.  However, for algorithms like EdDSA or Ed448 which are SUF secure, this property should remain.
+Non‑separability: {{I-D.ietf-lamps-pq-composite-sigs}} achieved Weak Non‑Separability (WNS) and a limited form of SNS for ML‑DSA via the `mldsa_ctx=Label`. PKC‑binding additionally prevents forming `(mldsaSig1, tradSig2)` under different keys, because both signatures are now bounded to the same `pkc`. This does not fix primitive‑level malleability (e.g., ECDSA) and therefore does not claim SUF‑CMA.  However, for algorithms like EdDSA or Ed448 which are SUF secure, this property should remain.
 
-**Prefix**: Existing **Prefix** and **Label** remain unchanged; deployments that implemented the optional Prefix in traditional verifiers can keep it as is.
+Prefix: The existing Prefix and Label remain unchanged; deployments that implemented the optional Prefix in traditional verifiers can keep it as is.
 
-**Hash Choices**: `Hash_ctx` MUST be the algorithm’s registered pre‑hash function (e.g., SHA‑256, SHA‑512, SHAKE256/64). This keeps implementation complexity minimal and ensures digest sizes fit within the ctx length field.
+Hash Choices: `Hash_ctx` MUST be the algorithm’s registered pre‑hash function (e.g., SHA‑256, SHA‑512, SHAKE256/64). This keeps implementation complexity minimal and ensures digest sizes fit within the ctx length field.
 
-**Privacy**: `pkc` reveals nothing beyond what the public key already reveals; it is a hash of public data.
+Privacy: `pkc` reveals nothing beyond what the public key already reveals; it is a hash of public data.
 
 
 # Implementation Considerations
 
-**Signer Access to pk**: The signer computes `pkc` either by deriving `compositePK` from `compositeSK`, or by keeping a cached copy of `compositepk` alongside `compositesk`.
+Signer Access to pk: The signer computes `pkc` either by deriving `compositePK` from `compositeSK`, or by keeping a cached copy of `compositepk` alongside `compositesk`.
 
-**Interoperability**: Because `M'` changes when this context type is used, peers MUST know that this context will be used.  One way to achieve this is for application specific use cases to specify this context type as part of the usage.  For example, if an application using composite signatures desired this security property, it could make use of the public key binding in the context mandatory.
+Interoperability: Because `M'` changes when this context type is used, peers MUST know that this context will be used.  One way to achieve this is for application specific use cases to specify this context type as part of the usage.  For example, if an application using composite signatures desired this security property, it could make use of the public key binding in the context mandatory.
 
 
 # IANA Considerations
