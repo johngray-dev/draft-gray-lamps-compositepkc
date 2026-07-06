@@ -8,25 +8,26 @@
 <meta content="John Gray" name="author">
 <meta content="Lucas Prabel" name="author">
 <meta content="
-       This document defines a small, backwards‑compatible change to composite ML-DSA that  cryptographically binds the signature to the specific composite public key . It does so by defining a  Public‑Key Context  value ( pkc ) equal to a hash of the  serialized composite public key , and by setting the composite context field to that value. This prevents  key reuse  and  cross‑key forgeries  across different composite keys, while preserving the API of Composite ML‑DSA. The construction introduces two helper procedures to compute  pkc  from either the composite private key or the composite public key. 
+       This document defines a small, backwards‑compatible change to composite ML-DSA that cryptographically binds the signature to the specific composite public key. It does so by defining a Public‑Key Context value ( pkc ) equal to a hash of the serialized composite public key, and by setting the composite context field to that value. This prevents key reuse and cross‑key forgeries across different composite keys, while preserving the API of Composite ML‑DSA. The construction introduces two helper procedures to compute  pkc  from either the composite private key or the composite public key. 
     " name="description">
-<meta content="xml2rfc 3.33.0" name="generator">
+<meta content="xml2rfc 3.34.0" name="generator">
 <meta content="composite signatures" name="keyword">
 <meta content="public key binding" name="keyword">
 <meta content="draft-gray-lamps-compositepkc-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.33.0
-    Python 3.12.13
-    ConfigArgParse 1.7
+  xml2rfc 3.34.0
+    Python 3.14.5
+    ConfigArgParse 1.7.5
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
-    lxml 6.0.2
-    platformdirs 4.9.6
+    lxml 6.1.1
+    natsort 8.4.0
+    platformdirs 4.10.0
     pycountry 24.6.1
     PyYAML 6.0.3
     requests 2.33.1
-    wcwidth 0.7.0
+    wcwidth 0.8.2
 -->
 <link href="draft-gray-lamps-compositepkc.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -293,16 +294,19 @@ h1, h2, h3, h4, h5, h6 {
   font-size-adjust: 0.5;
   color: var(--title-color);
 }
-h1#title {
-  font-size: 32px;
-  line-height: 40px;
-  clear: both;
-}
-h1#title, h1#rfcnum {
-  margin: 1.5em 0 0.2em;
-}
-h1#rfcnum + h1#title {
-  margin: 0.2em 0;
+h1 {
+  &#title {
+    font-size: 32px;
+    line-height: 40px;
+    clear: both;
+    margin: 1.5em 0 0.2em;
+  }
+  &#rfcnum {
+    margin: 1.5em 0 0.2em;
+    & + h1#title {
+      margin: 0.2em 0;
+    }
+  }
 }
 
 h1, h2, h3 {
@@ -322,10 +326,10 @@ h4, h5, h6 {
 #abstract+p {
   font-size: 18px;
   line-height: 24px;
-}
-#abstract+p code, #abstract+p samp, #abstract+p tt {
-  font-size: 16px;
-  line-height: 0;
+  & code, & samp, & tt {
+    font-size: 16px;
+    line-height: 0;
+  }
 }
 
 p {
@@ -336,59 +340,59 @@ p {
 div {
   margin: 0;
 }
-.alignRight.art-text {
-  background-color: var(--highlight-color);
-  border: 1px solid var(--line-color);
-  border-radius: 3px;
-  padding: 0.5em 1em 0;
-  margin-bottom: 0.5em;
-}
-.alignRight.art-text pre {
-  padding: 0;
-  width: auto;
-}
 .alignRight {
   margin: 1em 0;
-}
-.alignRight > *:first-child {
-  border: none;
-  margin: 0;
-  float: right;
-  clear: both;
-}
-.alignRight > *:nth-child(2) {
-  clear: both;
-  display: block;
-  border: none;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    margin: 0;
+    float: right;
+    clear: both;
+  }
+  & > *:nth-child(2) {
+    clear: both;
+    display: block;
+    border: none;
+  }
 }
 svg {
   display: block;
-}
-/* font-family isn't space-separated, but =~ will have to do */
-svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
-  font-family: var(--font-mono);
-}
-.alignCenter.art-text {
-  background-color: var(--highlight-color);
-  border: 1px solid var(--line-color);
-  border-radius: 3px;
-  padding: 0.5em 1em 0;
-  margin-bottom: 0.5em;
-}
-.alignCenter.art-text pre {
-  padding: 0;
-  width: auto;
+  /* font-family isn't space-separated, but =~ will have to do */
+  &[font-family~="monospace" i], & [font-family~="monospace" i] {
+    font-family: var(--font-mono);
+  }
 }
 .alignCenter {
   margin: 1em 0;
-}
-.alignCenter > *:first-child {
-  border: none;
-  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
-     support flexbox yet.
-  */
-  display: table;
-  margin: 0 auto;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+       support flexbox yet.
+    */
+    display: table;
+    margin: 0 auto;
+  }
 }
 
 /* lists */
@@ -426,26 +430,25 @@ dl {
     --indent: 5ch;
     & > dt {
       min-width: calc(var(--indent) - 2ch);
+      float: none;
     }
-  }
-  &.olPercent > dt {
-    float: none;
   }
 
   dl > dd > & {
     margin-top: 0.5em;
     margin-bottom: 0;
   }
-}
-dl:not(.dlNewline) > dt {
-  float: left;
-  margin-right: 2ch;
-  min-width: 8ch;
-}
-dl > dd {
-  margin-bottom: .8em;
-  margin-left: var(--indent) !important; /* stupid element overrides */
-  min-height: 2ex;
+
+  &:not(.dlNewline) > dt {
+    float: left;
+    margin-right: 2ch;
+    min-width: 8ch;
+  }
+  & > dd {
+    margin-bottom: .8em;
+    margin-left: var(--indent) !important; /* stupid element overrides */
+    min-height: 2ex;
+  }
 }
 :is(dl.compact, .dlCompact) > dd {
   margin-bottom: 0;
@@ -461,20 +464,22 @@ dl > dd {
 }
 
 /* links */
-a, a[href].selfRef:hover {
+a {
   text-decoration: none;
+  &[href] {
+    color: var(--link-color);
+    &:hover { text-decoration: underline; }
+    &.selfRef {
+      color: var(--text-color);
+      &:hover {
+        text-decoration: none;
+        background-color: var(--highlight-color);
+      }
+    }
+  }
 }
-a[href] {
-  color: var(--link-color);
-}
-a[href].selfRef, .iref + a[href].internal {
+.iref + a[href].internal {
   color: var(--text-color);
-}
-a[href]:hover {
-  text-decoration: underline;
-}
-a[href].selfRef:hover {
-  background-color: var(--highlight-color);
 }
 a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
   white-space: nowrap;
@@ -510,9 +515,9 @@ img {
 figure {
   margin: 0.5em 0;
   padding: 0;
-}
-figure blockquote {
-  margin: 0.8em 0.4em 0.4em;
+  & blockquote {
+    margin: 0.8em 0.4em 0.4em;
+  }
 }
 figcaption, caption {
   font-style: italic;
@@ -522,17 +527,19 @@ figcaption, caption {
 }
 @media screen {
   /* Auto-collapse boilerplate. */
-  :is(#status-of-memo, #copyright) p {
-    margin: -2px 0;
-    max-height: 0;
-    transition: max-height 2s ease, margin 0.5s ease 0.5s;
-    overflow: hidden;
-  }
-  :is(#status-of-memo, #copyright):hover p,
-  :is(#status-of-memo, #copyright) h2:target ~ p {
-    margin: 0.5em 0;
-    max-height: 500px;
-    overflow: auto;
+  :is(#status-of-memo, #copyright) {
+    & p {
+      margin: -2px 0;
+      max-height: 0;
+      transition: max-height 2s ease, margin 0.5s ease 0.5s;
+      overflow: hidden;
+    }
+    &:hover p,
+    & h2:target ~ p {
+      margin: 0.5em 0;
+      max-height: 500px;
+      overflow: auto;
+    }
   }
   pre, svg {
     display: inline-block;
@@ -582,25 +589,17 @@ table {
   max-width: 100%;
   margin: 0 0 1em;
   border-collapse: collapse;
-}
-table.right {
-  margin-left: auto;
-}
-table.center {
-  margin-left: auto;
-  margin-right: auto;
-}
-table.left {
-  margin-right: auto;
-}
-table .text-left {
-  text-align: left;
-}
-table .text-center {
-  text-align: center;
-}
-table .text-right {
-  text-align: right;
+  &.right { margin-left: auto; }
+  &.center { margin-left: auto; margin-right: auto; }
+  &.left { margin-right: auto; }
+  & .text-left { text-align: left; }
+  & .text-center { text-align: center; }
+  & .text-right { text-align: right; }
+  & caption {
+    margin: 0;
+    padding: 3px 0 3px 1em;
+  }
+  & p { margin: 0; }
 }
 
 thead, tbody {
@@ -620,13 +619,6 @@ th {
 :is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
   background-color: var(--highlight-color);
 }
-table caption {
-  margin: 0;
-  padding: 3px 0 3px 1em;
-}
-table p {
-  margin: 0;
-}
 
 /* pilcrow */
 a.pilcrow {
@@ -637,18 +629,16 @@ a.pilcrow {
     color: var(--pilcrow-weak);
     &:hover { text-decoration: none; }
   }
-}
-@media not print {
-  :hover > a.pilcrow, a.pilcrow:focus {
-    opacity: 1;
+  @media not print {
+    :hover > &, &:focus {
+      opacity: 1;
+    }
+    &[href]:hover {
+      color: var(--pilcrow-strong);
+      background-color: transparent;
+    }
   }
-  a.pilcrow[href]:hover {
-    color: var(--pilcrow-strong);
-    background-color: transparent;
-  }
-}
-@media print {
-  a.pilcrow {
+  @media print {
     display: none;
   }
 }
@@ -707,9 +697,9 @@ sub, sup {
   font-size: 0.9em;
   font-style: italic;
   margin-top: 2em;
-}
-.docInfo .prepared {
-  float: right;
+  & .prepared {
+    float: right;
+  }
 }
 
 /* table of contents */
@@ -799,23 +789,27 @@ hr.addr {
   max-width: calc(100% - 16px);
 }
 @media (min-width: 500px) {
-  #authors-addresses > section {
-    column-count: 2;
-    column-gap: 20px;
-  }
-  #authors-addresses > section > h2 {
-    column-span: all;
-  }
-  /* hack for break-inside: avoid-column */
-  #authors-addresses address {
-    display: inline-block;
-    break-inside: avoid-column;
+  #authors-addresses {
+    & > section {
+      column-count: 2;
+      column-gap: 20px;
+    }
+    & > section > h2 {
+      column-span: all;
+    }
+    /* hack for break-inside: avoid-column */
+    & address {
+      display: inline-block;
+      break-inside: avoid-column;
+    }
   }
 }
 
 /* Comments */
-.rfcEditorRemove p:first-of-type {
-  font-style: italic;
+.rfcEditorRemove {
+  & p:first-of-type {
+    font-style: italic;
+  }
 }
 .cref {
   background-color: rgba(249, 232, 105, 0.3);
@@ -826,19 +820,21 @@ hr.addr {
 }
 
 @media screen {
-  #toc nav {
-    font-family: var(--font-title);
-    font-weight: 360;
-    & > ul { margin-bottom: 2em; }
-    & ul {
-      margin: 0 0 0 4px;
-      & :is(p, li) {
-        margin: 2px 0;
+  #toc {
+    & nav {
+      font-family: var(--font-title);
+      font-weight: 360;
+      & > ul { margin-bottom: 2em; }
+      & ul {
+        margin: 0 0 0 4px;
+        & :is(p, li) {
+          margin: 2px 0;
+        }
       }
     }
-  }
-  #toc a.toplink {
-    float: right;
+    & a.toplink {
+      float: right;
+    }
   }
 }
 @media not screen {
@@ -859,54 +855,54 @@ hr.addr {
     margin: 0;
     border-bottom: 1px solid #ccc;
     opacity: 0.6;
-  }
-  #toc h2 {
-    margin: 0;
-    padding: 2px 0 2px 6px;
-    padding-right: 1em;
-    font-size: 18px;
-    line-height: 24px;
-    min-width: 190px;
-    text-align: right;
-    background-color: #444;
-    color: white;
-    cursor: pointer;
-    &::before { /* css hamburger */
-      float: right;
-      position: relative;
-      width: 1em;
-      height: 1px;
-      left: -164px;
-      margin: 8px 0 0 0;
-      background: white none repeat scroll 0 0;
-      box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
-      content: "";
+    & h2 {
+      margin: 0;
+      padding: 2px 0 2px 6px;
+      padding-right: 1em;
+      font-size: 18px;
+      line-height: 24px;
+      min-width: 190px;
+      text-align: right;
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+      &::before { /* css hamburger */
+        float: right;
+        position: relative;
+        width: 1em;
+        height: 1px;
+        left: -164px;
+        margin: 8px 0 0 0;
+        background: white none repeat scroll 0 0;
+        box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+        content: "";
+      }
     }
-  }
-  #toc nav {
-    display: none;
-    background-color: var(--background-color);
-    padding: 0.5em 1em 1em;
-    overflow: auto;
-    overscroll-behavior: contain;
-    height: calc(100vh - 48px);
-    border-left: 1px solid #ddd;
-  }
-  #toc.active {
-    opacity: 1;
-    & nav { display: block; }
-  }
-  /* Make the collapsed ToC header render white on gray also when it's a link */
-  #toc h2 a,
-  #toc h2 a:is(:link, :focus, :hover),
-  #toc a.toplink,
-  #toc a.toplink:hover {
-    color: white;
-    background-color: #444;
-    text-decoration: none;
-  }
-  #toc a.toplink {
-    margin: 2px 0.5em 0;
+    & nav {
+      display: none;
+      background-color: var(--background-color);
+      padding: 0.5em 1em 1em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      height: calc(100vh - 48px);
+      border-left: 1px solid #ddd;
+    }
+    &.active {
+      opacity: 1;
+      & nav { display: block; }
+    }
+    /* Make the collapsed ToC header render white on gray also when it's a link */
+    & h2 a,
+    & h2 a:is(:link, :focus, :hover),
+    & a.toplink,
+    & a.toplink:hover {
+      color: white;
+      background-color: #444;
+      text-decoration: none;
+    }
+    & a.toplink {
+      margin: 2px 0.5em 0;
+    }
   }
 }
 
@@ -925,26 +921,26 @@ hr.addr {
     margin: 0;
     padding: 0;
     z-index: 1;
-  }
-  #toc h2 {
-    margin: 0;
-    padding: 0.25em 1em 1em 0;
-  }
-  #toc nav {
-    display: block;
-    height: calc(90vh - 84px);
-    bottom: 0;
-    padding: 0.5em 0 2em;
-    overflow: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
+    & h2 {
+      margin: 0;
+      padding: 0.25em 1em 1em 0;
+    }
+    & nav {
+      display: block;
+      height: calc(90vh - 84px);
+      bottom: 0;
+      padding: 0.5em 0 2em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+    }
+    & a.toplink {
+      margin: 8px 0.5em 0;
+    }
   }
   img { /* future proofing */
     max-width: 100%;
     height: auto;
-  }
-  #toc a.toplink {
-    margin: 8px 0.5em 0;
   }
 }
 
@@ -960,12 +956,13 @@ hr.addr {
   #n-copyright-notice {
     border-bottom: none;
   }
-  #toc, #n-introduction {
-    page-break-before: always;
-  }
   #toc {
+    page-break-before: always;
     border-top: none;
     padding-top: 0;
+  }
+  #n-introduction {
+    page-break-before: always;
   }
   figure, pre, .vcard {
     page-break-inside: avoid;
@@ -1027,17 +1024,19 @@ hr.addr {
 }
 
 /* SVG Trick: a prefix match works because only black and white are allowed */
-svg :is([stroke="black"], [stroke^="#000"]) {
-  stroke: var(--text-color);
-}
-svg :is([stroke="white"], [stroke^="#fff"]) {
-  stroke: var(--background-color);
-}
-svg :is([fill="black"], [fill^="#000"], :not([fill])) {
-  fill: var(--text-color);
-}
-svg :is([fill="white"], [fill^="#fff"]) {
-  fill: var(--background-color);
+svg {
+  & :is([stroke="black"], [stroke^="#000"]) {
+    stroke: var(--text-color);
+  }
+  & :is([stroke="white"], [stroke^="#fff"]) {
+    stroke: var(--background-color);
+  }
+  & :is([fill="black"], [fill^="#000"], :not([fill])) {
+    fill: var(--text-color);
+  }
+  & :is([fill="white"], [fill^="#fff"]) {
+    fill: var(--background-color);
+  }
 }
 </style>
 
@@ -1047,11 +1046,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">Composite-PKC-Context</td>
-<td class="right">May 2026</td>
+<td class="right">July 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Gray &amp; Prabel</td>
-<td class="center">Expires 14 November 2026</td>
+<td class="center">Expires 7 January 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1064,12 +1063,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-gray-lamps-compositepkc-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-05-13" class="published">13 May 2026</time>
+<time datetime="2026-07-06" class="published">6 July 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-11-14">14 November 2026</time></dd>
+<dd class="expires"><time datetime="2027-01-07">7 January 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1086,7 +1085,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">Preventing Key Reuse and Cross‑Key Forgeries in Composite ML-DSA</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document defines a small, backwards‑compatible change to composite ML-DSA that <strong>cryptographically binds the signature to the specific composite public key</strong>. It does so by defining a <strong>Public‑Key Context</strong> value (<code>pkc</code>) equal to a hash of the <strong>serialized composite public key</strong>, and by setting the composite context field to that value. This prevents <strong>key reuse</strong> and <strong>cross‑key forgeries</strong> across different composite keys, while preserving the API of Composite ML‑DSA. The construction introduces two helper procedures to compute <code>pkc</code> from either the composite private key or the composite public key.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines a small, backwards‑compatible change to composite ML-DSA that cryptographically binds the signature to the specific composite public key. It does so by defining a Public‑Key Context value (<code>pkc</code>) equal to a hash of the serialized composite public key, and by setting the composite context field to that value. This prevents key reuse and cross‑key forgeries across different composite keys, while preserving the API of Composite ML‑DSA. The construction introduces two helper procedures to compute <code>pkc</code> from either the composite private key or the composite public key.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1118,7 +1117,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 14 November 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 7 January 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1211,15 +1210,15 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">Composite signature schemes (e.g., Composite ML‑DSA) pre-hash the application message and prepend a <strong>Prefix</strong>, an algorithm‑specific <strong>Label</strong>, and an application‑provided <strong>ctx</strong> byte string to form the message representative <code>M'</code>, which is then signed by each component primitive. The current composite signature construction:<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-1">Composite signature schemes (e.g., Composite ML‑DSA) pre-hash the application message and prepend a Prefix, an algorithm‑specific Label, and an application‑provided ctx byte string to form the message representative <code>M'</code>, which is then signed by each component primitive. The current composite signature construction:<a href="#section-1-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-1-2">
 <pre>
 M' :=  Prefix || Label || len(ctx) || ctx || PH( M )
 </pre><a href="#section-1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-1-3">The <code>ctx</code> is an application context of up to 255 bytes.<a href="#section-1-3" class="pilcrow">¶</a></p>
-<p id="section-1-4">While the existing design already mitigates several cross‑protocol issues via <code>Prefix</code> and <code>Label</code>, and explicitly <strong>forbids key reuse</strong>, some deployments may still reuse component keys or attempt to combine component signatures across keys. This opens the door to <strong>cross‑key “mix‑and‑match” forgeries</strong> (splicing a valid ML‑DSA component from one composite with a valid traditional component from another).<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5">This document proposes a <strong>minimal change</strong>: set <code>ctx</code> to a <strong>hash of the composite public key</strong>. Because the hash depends on the <em>exact</em> public key bytes, both component signatures become bound to the same key material, preventing cross‑key recombination.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-4">While the existing design already mitigates several cross‑protocol issues via <code>Prefix</code> and <code>Label</code>, and explicitly forbids key reuse, some deployments may still reuse component keys or attempt to combine component signatures across keys. This opens the door to cross‑key “mix‑and‑match” forgeries (splicing a valid ML‑DSA component from one composite with a valid traditional component from another).<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">This document proposes a minimal change: set <code>ctx</code> to a hash of the composite public key. Because the hash depends on the exact public key bytes, both component signatures become bound to the same key material, preventing cross‑key recombination.<a href="#section-1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1227,7 +1226,7 @@ M' :=  Prefix || Label || len(ctx) || ctx || PH( M )
       <h2 id="name-conventions-and-definitions">
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
       </h2>
-<p id="section-2-1">This document inherits the notation of the Composite ML‑DSA draft (e.g., <code>Prefix</code>, <code>Label</code>, <code>PH</code>, <code>SerializePublicKey</code>, etc.) and the conventional <strong>KeyGen/Sign/Verify</strong> API of a signature scheme.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-1">This document inherits the notation of the Composite ML‑DSA draft (e.g., <code>Prefix</code>, <code>Label</code>, <code>PH</code>, <code>SerializePublicKey</code>, etc.) and the conventional KeyGen/Sign/Verify API of a signature scheme.<a href="#section-2-1" class="pilcrow">¶</a></p>
 <p id="section-2-2">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
 "<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
 described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
@@ -1239,11 +1238,11 @@ appear in all capitals, as shown here.<a href="#section-2-2" class="pilcrow">¶<
       <h2 id="name-threat-model-and-goals">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-threat-model-and-goals" class="section-name selfRef">Threat Model and Goals</a>
       </h2>
-<p id="section-3-1"><em>Goal</em>: prevent an adversary from taking valid component signatures produced under <strong>different</strong> composite keys and combining them into a valid composite signature for a target key.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2"><em>Approach</em>: bind both component signatures to the <strong>same exact composite public key</strong> by including <code>pkc = H(SerializePublicKey(..))</code> inside <code>M'</code>. Because <code>pkc</code> changes with any bit of the key, component signatures extracted from different keys no longer verify together.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-1">Goal: prevent an adversary from taking valid component signatures produced under different composite keys and combining them into a valid composite signature for a target key.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">Approach: bind both component signatures to the same exact composite public key by including <code>pkc = H(SerializePublicKey(..))</code> inside <code>M'</code>. Because <code>pkc</code> changes with any bit of the key, component signatures extracted from different keys no longer verify together.<a href="#section-3-2" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-3-3.1">
-          <p id="section-3-3.1.1">This does <strong>not</strong> change the malleability properties of individual primitives (e.g., ECDSA); therefore SUF‑CMA is still not claimed. It primarily removes <strong>cross‑key</strong> splicing and reduces the impact of accidental key reuse.<a href="#section-3-3.1.1" class="pilcrow">¶</a></p>
+          <p id="section-3-3.1.1">This does not change the malleability properties of individual primitives (e.g., ECDSA); therefore SUF‑CMA is still not claimed. It primarily removes cross‑key splicing and reduces the impact of accidental key reuse.<a href="#section-3-3.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1254,7 +1253,7 @@ appear in all capitals, as shown here.<a href="#section-2-2" class="pilcrow">¶<
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-overview-of-the-constructio" class="section-name selfRef">Overview of the Construction</a>
       </h2>
 <p id="section-4-1">This construction proposes <code>len(pkc)</code> as the length of the <code>len(ctx)</code> and <code>pkc</code> as the <code>ctx</code> value; all signature computation remains as specified in the base document.<a href="#section-4-1" class="pilcrow">¶</a></p>
-<p id="section-4-2">Let <code>Hash_ctx</code> denote the hash function chosen by the algorithm’s OID (e.g., SHA‑256, SHA‑512, SHAKE256/64). The <strong>Public‑Key Context</strong> is:<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-2">Let <code>Hash_ctx</code> denote the hash function chosen by the algorithm’s OID (e.g., SHA‑256, SHA‑512, SHAKE256/64). The Public‑Key Context is:<a href="#section-4-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4-3">
 <pre>
 pkc = Hash_ctx( SerializePublicKey(mldsaPK, tradPK) )
@@ -1293,8 +1292,8 @@ Hash_ctx: the hash function for PKC (same as the algorithm’s PH unless specifi
 Process:
 
 1.  (mldsaSeed, tradSK) = DeserializePrivateKey(sk)
-2.  (mldsaPK, mldsaSK) = ML-DSA.KeyGen_internal(mldsaSeed)     // FIPS 204, seed-based expansion
-4.  tradPK  = Trad.PublicKey(tradSK)                        // derive public key from private key
+2.  (mldsaPK, mldsaSK) = ML-DSA.KeyGen_internal(mldsaSeed)
+4.  tradPK  = Trad.PublicKey(tradSK)
 5.  pk = SerializePublicKey(mldsaPK, tradPK)
 6.  pkc = Hash_ctx(pk)
 7.  return pkc
@@ -1353,7 +1352,7 @@ Process:
       </h2>
 <p id="section-6-1">Both <code>Composite-ML-DSA&lt;OID&gt;.Sign(sk, M, ctx)</code> and <code>Composite-ML-DSA&lt;OID&gt;.Verify(pk, M, s, ctx)</code> remain the same.   The only difference is that pkc is passed in as the ctx value.<a href="#section-6-1" class="pilcrow">¶</a></p>
 <p id="section-6-2">The signature interface remains the same.<a href="#section-6-2" class="pilcrow">¶</a></p>
-<p id="section-6-3">Note:  The application specific <code>ctx</code> argument is <strong>ignored</strong> with this current design.  To keep that property, a future version of this specification could set <code>pkc = HASH (ctx || publickey)</code>.<a href="#section-6-3" class="pilcrow">¶</a></p>
+<p id="section-6-3">Note:  The application specific <code>ctx</code> argument is ignored with this current design.  To keep that property, a future version of this specification could set <code>pkc = HASH (ctx || publickey)</code>.<a href="#section-6-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="serialization-and-asn1-usage">
@@ -1361,8 +1360,8 @@ Process:
       <h2 id="name-serialization-and-asn1-usag">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-serialization-and-asn1-usag" class="section-name selfRef">Serialization and ASN.1 Usage</a>
       </h2>
-<p id="section-7-1">This document <strong>does not</strong> change the composite public/private key or signature <strong>serialization formats</strong> from <span>[<a href="#I-D.ietf-lamps-pq-composite-sigs" class="cite xref">I-D.ietf-lamps-pq-composite-sigs</a>]</span> and signatures remain concatenations of the component encodings. It also does not change DER wrapping in SPKI/PKCS#8.<a href="#section-7-1" class="pilcrow">¶</a></p>
-<p id="section-7-2">Because wire compatibility requires peers to know whether <code>ctx</code> is application‑set or PKC‑bound, this document could have registered <strong>new algorithm identifiers</strong> for each PKC‑bound combination.  However, that is not within the scope of this document.  This is meant for specific application context use-cases where the preventing key reuse is a desired security property.  For example, applications which choose to profile a set of composite signatures could choose to also adopt the use of this context.<a href="#section-7-2" class="pilcrow">¶</a></p>
+<p id="section-7-1">This document does not change the composite public/private key or signature serialization formats from <span>[<a href="#I-D.ietf-lamps-pq-composite-sigs" class="cite xref">I-D.ietf-lamps-pq-composite-sigs</a>]</span> and signatures remain concatenations of the component encodings. It also does not change DER wrapping in SPKI/PKCS#8.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">Because wire compatibility requires peers to know whether <code>ctx</code> is application‑set or PKC‑bound, this document could have registered new algorithm identifiers for each PKC‑bound combination.  However, that is not within the scope of this document.  This is meant for specific application context use-cases where the preventing key reuse is a desired security property.  For example, applications which choose to profile a set of composite signatures could choose to also adopt the use of this context.<a href="#section-7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
@@ -1370,11 +1369,11 @@ Process:
       <h2 id="name-security-considerations">
 <a href="#section-8" class="section-number selfRef">8. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-8-1"><strong>Key Reuse</strong>: <span>[<a href="#I-D.ietf-lamps-pq-composite-sigs" class="cite xref">I-D.ietf-lamps-pq-composite-sigs</a>]</span> strictly forbids reusing component keys. Binding <code>ctx</code> to <code>pkc</code> provides a cryptographic backstop: even if component keys were (improperly) reused, cross‑key splicing will fail because <code>pkc</code> differs for each public key instance.<a href="#section-8-1" class="pilcrow">¶</a></p>
-<p id="section-8-2"><strong>Non‑separability</strong>: <span>[<a href="#I-D.ietf-lamps-pq-composite-sigs" class="cite xref">I-D.ietf-lamps-pq-composite-sigs</a>]</span> achieved Weak Non‑Separability (WNS) and a limited form of SNS for ML‑DSA via the <code>mldsa_ctx=Label</code>. PKC‑binding additionally prevents forming <code>(mldsaSig1, tradSig2)</code> under different keys, because both signatures are now bounded to the same <code>pkc</code>. This does <strong>not</strong> fix primitive‑level malleability (e.g., ECDSA) and therefore does not claim SUF‑CMA.  However, for algorithms like EdDSA or Ed448 which are SUF secure, this property should remain.<a href="#section-8-2" class="pilcrow">¶</a></p>
-<p id="section-8-3"><strong>Prefix</strong>: Existing <strong>Prefix</strong> and <strong>Label</strong> remain unchanged; deployments that implemented the optional Prefix in traditional verifiers can keep it as is.<a href="#section-8-3" class="pilcrow">¶</a></p>
-<p id="section-8-4"><strong>Hash Choices</strong>: <code>Hash_ctx</code> <span class="bcp14">MUST</span> be the algorithm’s registered pre‑hash function (e.g., SHA‑256, SHA‑512, SHAKE256/64). This keeps implementation complexity minimal and ensures digest sizes fit within the ctx length field.<a href="#section-8-4" class="pilcrow">¶</a></p>
-<p id="section-8-5"><strong>Privacy</strong>: <code>pkc</code> reveals nothing beyond what the public key already reveals; it is a hash of public data.<a href="#section-8-5" class="pilcrow">¶</a></p>
+<p id="section-8-1">Key Reuse: <span>[<a href="#I-D.ietf-lamps-pq-composite-sigs" class="cite xref">I-D.ietf-lamps-pq-composite-sigs</a>]</span> strictly forbids reusing component keys. Binding <code>ctx</code> to <code>pkc</code> provides a cryptographic backstop: even if component keys were (improperly) reused, cross‑key splicing will fail because <code>pkc</code> differs for each public key instance.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-2">Non‑separability: <span>[<a href="#I-D.ietf-lamps-pq-composite-sigs" class="cite xref">I-D.ietf-lamps-pq-composite-sigs</a>]</span> achieved Weak Non‑Separability (WNS) and a limited form of SNS for ML‑DSA via the <code>mldsa_ctx=Label</code>. PKC‑binding additionally prevents forming <code>(mldsaSig1, tradSig2)</code> under different keys, because both signatures are now bounded to the same <code>pkc</code>. This does not fix primitive‑level malleability (e.g., ECDSA) and therefore does not claim SUF‑CMA.  However, for algorithms like EdDSA or Ed448 which are SUF secure, this property should remain.<a href="#section-8-2" class="pilcrow">¶</a></p>
+<p id="section-8-3">Prefix: The existing Prefix and Label remain unchanged; deployments that implemented the optional Prefix in traditional verifiers can keep it as is.<a href="#section-8-3" class="pilcrow">¶</a></p>
+<p id="section-8-4">Hash Choices: <code>Hash_ctx</code> <span class="bcp14">MUST</span> be the algorithm’s registered pre‑hash function (e.g., SHA‑256, SHA‑512, SHAKE256/64). This keeps implementation complexity minimal and ensures digest sizes fit within the ctx length field.<a href="#section-8-4" class="pilcrow">¶</a></p>
+<p id="section-8-5">Privacy: <code>pkc</code> reveals nothing beyond what the public key already reveals; it is a hash of public data.<a href="#section-8-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="implementation-considerations">
@@ -1382,8 +1381,8 @@ Process:
       <h2 id="name-implementation-consideratio">
 <a href="#section-9" class="section-number selfRef">9. </a><a href="#name-implementation-consideratio" class="section-name selfRef">Implementation Considerations</a>
       </h2>
-<p id="section-9-1"><strong>Signer Access to pk</strong>: The signer computes <code>pkc</code> either by deriving <code>compositePK</code> from <code>compositeSK</code>, or by keeping a cached copy of <code>compositepk</code> alongside <code>compositesk</code>.<a href="#section-9-1" class="pilcrow">¶</a></p>
-<p id="section-9-2"><strong>Interoperability</strong>: Because <code>M'</code> changes when this context type is used, peers <span class="bcp14">MUST</span> know that this context will be used.  One way to achieve this is for application specific use cases to specify this context type as part of the usage.  For example, if an application using composite signatures desired this security property, it could make use of the public key binding in the context mandatory.<a href="#section-9-2" class="pilcrow">¶</a></p>
+<p id="section-9-1">Signer Access to pk: The signer computes <code>pkc</code> either by deriving <code>compositePK</code> from <code>compositeSK</code>, or by keeping a cached copy of <code>compositepk</code> alongside <code>compositesk</code>.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-2">Interoperability: Because <code>M'</code> changes when this context type is used, peers <span class="bcp14">MUST</span> know that this context will be used.  One way to achieve this is for application specific use cases to specify this context type as part of the usage.  For example, if an application using composite signatures desired this security property, it could make use of the public key binding in the context mandatory.<a href="#section-9-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
@@ -1411,7 +1410,7 @@ Process:
 <dd class="break"></dd>
 <dt id="I-D.ietf-lamps-pq-composite-kem">[I-D.ietf-lamps-pq-composite-kem]</dt>
         <dd>
-<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Gray, J.</span>, <span class="refAuthor">Pala, M.</span>, <span class="refAuthor">Klaußner, J.</span>, and <span class="refAuthor">S. Fluhrer</span>, <span class="refTitle">"Composite ML-KEM for use in X.509 Public Key Infrastructure"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-pq-composite-kem-14</span>, <time datetime="2026-03-27" class="refDate">27 March 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-pq-composite-kem-14">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-pq-composite-kem-14</a>&gt;</span>. </dd>
+<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Gray, J.</span>, <span class="refAuthor">Pala, M.</span>, <span class="refAuthor">Klaußner, J.</span>, and <span class="refAuthor">S. Fluhrer</span>, <span class="refTitle">"Composite ML-KEM for use in X.509 Public Key Infrastructure"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-pq-composite-kem-17</span>, <time datetime="2026-06-28" class="refDate">28 June 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-pq-composite-kem-17">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-pq-composite-kem-17</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-lamps-pq-composite-sigs">[I-D.ietf-lamps-pq-composite-sigs]</dt>
         <dd>
